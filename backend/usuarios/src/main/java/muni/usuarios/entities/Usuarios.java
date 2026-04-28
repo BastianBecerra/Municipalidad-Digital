@@ -66,6 +66,12 @@ public class Usuarios {
     @Builder.Default
     private Boolean activo = true;
 
+    // --- Relación con Territorio (Junta de Vecinos) ---
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "territorio_id")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"vecinos"})
+    private Territorio territorio;
+
     // --- Auditoría ---
     @Column(name = "fecha_registro", updatable = false)
     private LocalDateTime fechaRegistro;
