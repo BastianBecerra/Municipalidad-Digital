@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+*.log
+logs/
+
+### Environment / Secrets ###
+.env
+.env.*
+
+### Docker volumes (datos locales) ###
+pgadmin-data/
+postgres-data/
