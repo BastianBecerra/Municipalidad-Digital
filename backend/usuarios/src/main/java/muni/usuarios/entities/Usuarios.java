@@ -5,6 +5,13 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "usuarios")
@@ -13,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Usuarios {
+public class Usuarios implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +66,9 @@ public class Usuarios {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "password_clave_unica")
+    private String passwordClaveUnica;
+
     @Column(nullable = false, length = 30)
     private String rol; // VECINO, FUNCIONARIO, ADMIN
 
@@ -91,5 +101,52 @@ public class Usuarios {
     @PreUpdate
     protected void onUpdate() {
         this.ultimaActualizacion = LocalDateTime.now();
+    }
+
+    // --- Métodos de UserDetails ---
+
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // En un caso real, el rol podría ser "ROLE_VECINO", "ROLE_ADMIN".
+        // Si en la base de datos lo guardas como "ADMIN", aquí le agregamos el "ROLE_" opcionalmente.
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.rol.toUpperCase()));
+    }
+
+    @JsonIgnore
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getUsername() {
+        // Usaremos el RUT como el username principal para Spring Security.
+        return this.rut;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() {
+        return this.activo;
     }
 }
