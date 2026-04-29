@@ -27,7 +27,7 @@ const Navbar = () => {
           <a href="#inicio" onClick={() => setMenuOpen(false)}>Inicio</a>
           <a href="#tramites" onClick={() => setMenuOpen(false)}>Trámites</a>
           <a href="#juntas" onClick={() => setMenuOpen(false)}>Juntas de vecinos</a>
-          <a href="#contacto" onClick={() => setMenuOpen(false)}>Contacto</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); setMenuOpen(false); navigate('/contacto'); }}>Contacto</a>
           <button onClick={() => navigate('/login')} className="btn btn-primary nav-btn">Ingresar</button>
         </div>
 
