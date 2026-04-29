@@ -5,6 +5,7 @@ import './Navbar.css';
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,6 +13,10 @@ const Navbar = () => {
       setScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
+
+    // Check if user is logged in
+    setIsLoggedIn(!!localStorage.getItem('token'));
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -28,7 +33,11 @@ const Navbar = () => {
           <a href="#tramites" onClick={() => setMenuOpen(false)}>Trámites</a>
           <a href="#juntas" onClick={() => setMenuOpen(false)}>Juntas de vecinos</a>
           <a href="#" onClick={(e) => { e.preventDefault(); setMenuOpen(false); navigate('/contacto'); }}>Contacto</a>
-          <button onClick={() => navigate('/login')} className="btn btn-primary nav-btn">Ingresar</button>
+          {isLoggedIn ? (
+            <button onClick={() => navigate('/perfil')} className="btn btn-primary nav-btn">Mi Perfil</button>
+          ) : (
+            <button onClick={() => navigate('/login')} className="btn btn-primary nav-btn">Ingresar</button>
+          )}
         </div>
 
         <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
@@ -40,3 +49,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
