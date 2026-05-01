@@ -28,19 +28,19 @@ public class DocumentoController {
     // --- Creation Endpoints ---
 
     @PostMapping("/junta-vecinal")
-    public DocumentoJuntaVecinal createJJVV(@RequestBody DocumentoJuntaVecinal doc, 
+    public DocumentoJuntaVecinal createJJVV(@RequestBody DocumentoJuntaVecinal doc,
                                             @RequestParam(defaultValue = "true") boolean isSimple) {
         return documentoService.createJuntaVecinalDoc(doc, isSimple);
     }
 
     @PostMapping("/licitacion")
-    public DocumentoLicitacion createLicitacion(@RequestBody DocumentoLicitacion doc, 
+    public DocumentoLicitacion createLicitacion(@RequestBody DocumentoLicitacion doc,
                                                 @RequestParam(defaultValue = "false") boolean isSimple) {
         return documentoService.createLicitacionDoc(doc, isSimple);
     }
 
     @PostMapping("/contrato")
-    public DocumentoContrato createContrato(@RequestBody DocumentoContrato doc, 
+    public DocumentoContrato createContrato(@RequestBody DocumentoContrato doc,
                                             @RequestParam(defaultValue = "false") boolean isSimple) {
         return documentoService.createContratoDoc(doc, isSimple);
     }
