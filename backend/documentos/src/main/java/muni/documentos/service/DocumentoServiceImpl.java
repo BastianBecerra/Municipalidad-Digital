@@ -40,6 +40,9 @@ public class DocumentoServiceImpl implements DocumentoService {
     @Value("${muni.territorios.url:http://app-usuarios:8086/territorios}")
     private String territoriosApiUrl;
 
+    @Value("${muni.internal.token}")
+    private String internalToken;
+
     @Override
     public List<Documento> findAll() {
         return documentoRepository.findAll();
@@ -62,16 +65,11 @@ public class DocumentoServiceImpl implements DocumentoService {
     public DocumentoJuntaVecinal createJuntaVecinalDoc(DocumentoJuntaVecinal doc, boolean isSimple) {
         if (doc.getJuntaVecinosId() != null) {
             try {
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("X-Internal-Token", "muni-digital-secret-token-2024");
-                HttpEntity<Void> entity = new HttpEntity<>(headers);
-
                 TerritorioDTO territorio = restTemplate.exchange(
                         territoriosApiUrl + "/" + doc.getJuntaVecinosId(),
                         HttpMethod.GET,
-                        entity,
-                        TerritorioDTO.class
-                ).getBody();
+                        new HttpEntity<>(getInternalHeaders()),
+                        TerritorioDTO.class).getBody();
 
                 if (territorio != null) {
                     doc.setNombreJuntaVecinal(territorio.getNombre());
@@ -103,27 +101,16 @@ public class DocumentoServiceImpl implements DocumentoService {
     public DocumentoSalvoconducto createSalvoconductoDoc(DocumentoSalvoconducto doc, boolean isSimple) {
         if (doc.getUsuarioId() != null) {
             try {
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("X-Internal-Token", "muni-digital-secret-token-2024");
-                HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-                UsuarioDTO usuario = restTemplate.exchange(
-                        usuariosApiUrl + "/" + doc.getUsuarioId(),
-                        HttpMethod.GET,
-                        entity,
-                        UsuarioDTO.class
-                ).getBody();
-
+                UsuarioDTO usuario = fetchUsuario(doc.getUsuarioId());
                 if (usuario != null) {
                     doc.setUsuarioRut(usuario.getRut());
                     doc.setUsuarioNombreCompleto(usuario.getNombres() + " " + usuario.getApellidoPaterno());
                 }
             } catch (Exception e) {
-                // Si falla la API de usuarios, podrías lanzar error o dejar que el usuario lo llene manual
-                System.err.println("Error al obtener usuario: " + e.getMessage());
+                System.err.println("Error al obtener usuario para salvoconducto: " + e.getMessage());
             }
         }
-        
+
         processDocument(doc, isSimple);
         return salvoconductoRepository.save(doc);
     }
@@ -133,25 +120,16 @@ public class DocumentoServiceImpl implements DocumentoService {
     public DocumentoResidencia createResidenciaDoc(DocumentoResidencia doc, boolean isSimple) {
         if (doc.getUsuarioId() != null) {
             try {
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("X-Internal-Token", "muni-digital-secret-token-2024");
-                HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-                UsuarioDTO usuario = restTemplate.exchange(
-                        usuariosApiUrl + "/" + doc.getUsuarioId(),
-                        HttpMethod.GET,
-                        entity,
-                        UsuarioDTO.class
-                ).getBody();
-
+                UsuarioDTO usuario = fetchUsuario(doc.getUsuarioId());
                 if (usuario != null) {
-                    doc.setUsuarioNombreCompleto(usuario.getNombres() + " " + usuario.getApellidoPaterno() + " " + (usuario.getApellidoMaterno() != null ? usuario.getApellidoMaterno() : ""));
+                    doc.setUsuarioNombreCompleto(usuario.getNombres() + " " + usuario.getApellidoPaterno() + " "
+                            + (usuario.getApellidoMaterno() != null ? usuario.getApellidoMaterno() : ""));
                     doc.setUsuarioRut(usuario.getRut());
                     doc.setUsuarioDireccion(usuario.getDireccion());
                     doc.setUsuarioComuna(usuario.getComuna());
                 }
             } catch (Exception e) {
-                System.err.println("Error al obtener usuario: " + e.getMessage());
+                System.err.println("Error al obtener usuario para residencia: " + e.getMessage());
             }
         }
         processDocument(doc, isSimple);
@@ -165,7 +143,7 @@ public class DocumentoServiceImpl implements DocumentoService {
         if (doc.getEstado() != EstadoDocumento.BORRADOR) {
             throw new RuntimeException("Solo se pueden aprobar documentos en estado BORRADOR");
         }
-        
+
         finalizeDocument(doc);
         return documentoRepository.save(doc);
     }
@@ -176,12 +154,12 @@ public class DocumentoServiceImpl implements DocumentoService {
         if (doc.getEstado() != EstadoDocumento.FIRMADO && doc.getEstado() != EstadoDocumento.APROBADO) {
             throw new RuntimeException("El documento debe estar firmado o aprobado para subirse a Blockchain");
         }
-        
+
         // Simulación de envío a Blockchain
         doc.setEstadoBlockchain(EstadoBlockchain.PROCESANDO);
         doc.setBlockchainTxHash("0x" + generateHash(doc.getHashSha256() + System.currentTimeMillis()));
         doc.setEstadoBlockchain(EstadoBlockchain.CONFIRMADO);
-        
+
         documentoRepository.save(doc);
     }
 
@@ -209,10 +187,27 @@ public class DocumentoServiceImpl implements DocumentoService {
 
         doc.setEstado(EstadoDocumento.FIRMADO);
 
-        // 4. Generar el archivo PDF real y guardarlo (simulado como byte array en BD para este ejemplo rápido)
-        // En un caso real guardaríamos en S3 o disco y pondríamos la ruta en doc.setRutaArchivoPdf()
+        // 4. Generar el archivo PDF real y guardarlo (simulado como byte array en BD
+        // para este ejemplo rápido)
+        // En un caso real guardaríamos en S3 o disco y pondríamos la ruta en
+        // doc.setRutaArchivoPdf()
         byte[] pdfBytes = pdfService.generateDocumentPdf(doc);
-        // Para este demo, lo dejamos así. En producción: storageService.save(pdfBytes, fileName);
+        // Para este demo, lo dejamos así. En producción: storageService.save(pdfBytes,
+        // fileName);
+    }
+
+    private HttpHeaders getInternalHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Internal-Token", internalToken);
+        return headers;
+    }
+
+    private UsuarioDTO fetchUsuario(Long usuarioId) {
+        return restTemplate.exchange(
+                usuariosApiUrl + "/" + usuarioId,
+                HttpMethod.GET,
+                new HttpEntity<>(getInternalHeaders()),
+                UsuarioDTO.class).getBody();
     }
 
     private String generateHash(String input) {
