@@ -8,9 +8,11 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin123
     ports:
-      - "5433:5432" # Puerto 5433 en el host para evitar conflicto con el servicio de usuarios (5432)
+      - "5433:5432"
     volumes:
       - postgres_documentos_data:/var/lib/postgresql/data
+    networks:
+      - muni-network
 
   app-documentos:
     build: .
@@ -25,6 +27,8 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     depends_on:
       - postgres-documentos
+    networks:
+      - muni-network
 
   pgadmin-documentos:
     image: dpage/pgadmin4:latest
@@ -34,9 +38,15 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@muni.cl
       PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
-      - "5051:80" # Puerto 5051 para evitar choque con el de usuarios (5050)
+      - "5051:80"
     depends_on:
       - postgres-documentos
+    networks:
+      - muni-network
+
+networks:
+  muni-network:
+    external: true
 
 volumes:
   postgres_documentos_data:

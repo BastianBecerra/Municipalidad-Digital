@@ -2,11 +2,18 @@ package muni.documentos.service;
 
 import lombok.RequiredArgsConstructor;
 import muni.documentos.model.entity.*;
+import muni.documentos.model.dto.UsuarioDTO;
+import muni.documentos.model.dto.TerritorioDTO;
 import muni.documentos.model.enums.EstadoBlockchain;
 import muni.documentos.model.enums.EstadoDocumento;
 import muni.documentos.repository.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -22,6 +29,15 @@ public class DocumentoServiceImpl implements DocumentoService {
     private final DocumentoJuntaVecinalRepository jjvvRepository;
     private final DocumentoLicitacionRepository licitacionRepository;
     private final DocumentoContratoRepository contratoRepository;
+    private final DocumentoSalvoconductoRepository salvoconductoRepository;
+    private final RestTemplate restTemplate;
+    private final PdfService pdfService;
+
+    @Value("${muni.usuarios.url:http://app-usuarios:8086/usuarios}")
+    private String usuariosApiUrl;
+
+    @Value("${muni.territorios.url:http://app-usuarios:8086/territorios}")
+    private String territoriosApiUrl;
 
     @Override
     public List<Documento> findAll() {
@@ -35,8 +51,34 @@ public class DocumentoServiceImpl implements DocumentoService {
     }
 
     @Override
+    public byte[] generatePdf(Long id) {
+        Documento doc = findById(id);
+        return pdfService.generateDocumentPdf(doc);
+    }
+
+    @Override
     @Transactional
     public DocumentoJuntaVecinal createJuntaVecinalDoc(DocumentoJuntaVecinal doc, boolean isSimple) {
+        if (doc.getJuntaVecinosId() != null) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("X-Internal-Token", "muni-digital-secret-token-2024");
+                HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+                TerritorioDTO territorio = restTemplate.exchange(
+                        territoriosApiUrl + "/" + doc.getJuntaVecinosId(),
+                        HttpMethod.GET,
+                        entity,
+                        TerritorioDTO.class
+                ).getBody();
+
+                if (territorio != null) {
+                    doc.setNombreJuntaVecinal(territorio.getNombre());
+                }
+            } catch (Exception e) {
+                System.err.println("Error al obtener territorio: " + e.getMessage());
+            }
+        }
         processDocument(doc, isSimple);
         return jjvvRepository.save(doc);
     }
@@ -53,6 +95,36 @@ public class DocumentoServiceImpl implements DocumentoService {
     public DocumentoContrato createContratoDoc(DocumentoContrato doc, boolean isSimple) {
         processDocument(doc, isSimple);
         return contratoRepository.save(doc);
+    }
+
+    @Override
+    @Transactional
+    public DocumentoSalvoconducto createSalvoconductoDoc(DocumentoSalvoconducto doc, boolean isSimple) {
+        if (doc.getUsuarioId() != null) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("X-Internal-Token", "muni-digital-secret-token-2024");
+                HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+                UsuarioDTO usuario = restTemplate.exchange(
+                        usuariosApiUrl + "/" + doc.getUsuarioId(),
+                        HttpMethod.GET,
+                        entity,
+                        UsuarioDTO.class
+                ).getBody();
+
+                if (usuario != null) {
+                    doc.setUsuarioRut(usuario.getRut());
+                    doc.setUsuarioNombreCompleto(usuario.getNombres() + " " + usuario.getApellidoPaterno());
+                }
+            } catch (Exception e) {
+                // Si falla la API de usuarios, podrías lanzar error o dejar que el usuario lo llene manual
+                System.err.println("Error al obtener usuario: " + e.getMessage());
+            }
+        }
+        
+        processDocument(doc, isSimple);
+        return salvoconductoRepository.save(doc);
     }
 
     @Override
@@ -104,8 +176,12 @@ public class DocumentoServiceImpl implements DocumentoService {
         doc.setFirmadoPor("SISTEMA_MUNICIPAL_AUTOMATICO");
         doc.setCodigoQrUrl("https://muni.digital/validar/" + hash);
 
-        // 3. Cambiar estados
         doc.setEstado(EstadoDocumento.FIRMADO);
+
+        // 4. Generar el archivo PDF real y guardarlo (simulado como byte array en BD para este ejemplo rápido)
+        // En un caso real guardaríamos en S3 o disco y pondríamos la ruta en doc.setRutaArchivoPdf()
+        byte[] pdfBytes = pdfService.generateDocumentPdf(doc);
+        // Para este demo, lo dejamos así. En producción: storageService.save(pdfBytes, fileName);
     }
 
     private String generateHash(String input) {

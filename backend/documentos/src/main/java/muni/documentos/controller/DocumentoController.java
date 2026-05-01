@@ -25,24 +25,39 @@ public class DocumentoController {
         return ResponseEntity.ok(documentoService.findById(id));
     }
 
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id) {
+        byte[] pdf = documentoService.generatePdf(id);
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=documento_" + id + ".pdf")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
     // --- Creation Endpoints ---
 
-    @PostMapping("/junta-vecinal")
-    public DocumentoJuntaVecinal createJJVV(@RequestBody DocumentoJuntaVecinal doc,
-                                            @RequestParam(defaultValue = "true") boolean isSimple) {
+    @PostMapping({"/jjvv", "/junta-vecinal"})
+    public DocumentoJuntaVecinal createJuntaVecinal(@RequestBody DocumentoJuntaVecinal doc,
+                                                    @RequestParam(defaultValue = "true") boolean isSimple) {
         return documentoService.createJuntaVecinalDoc(doc, isSimple);
     }
 
     @PostMapping("/licitacion")
     public DocumentoLicitacion createLicitacion(@RequestBody DocumentoLicitacion doc,
-                                                @RequestParam(defaultValue = "false") boolean isSimple) {
+                                                @RequestParam(defaultValue = "true") boolean isSimple) {
         return documentoService.createLicitacionDoc(doc, isSimple);
     }
 
     @PostMapping("/contrato")
     public DocumentoContrato createContrato(@RequestBody DocumentoContrato doc,
-                                            @RequestParam(defaultValue = "false") boolean isSimple) {
+                                            @RequestParam(defaultValue = "true") boolean isSimple) {
         return documentoService.createContratoDoc(doc, isSimple);
+    }
+
+    @PostMapping({"/salvoconducto", "/salvoconductos"})
+    public DocumentoSalvoconducto createSalvoconducto(@RequestBody DocumentoSalvoconducto doc,
+                                                      @RequestParam(defaultValue = "true") boolean isSimple) {
+        return documentoService.createSalvoconductoDoc(doc, isSimple);
     }
 
     // --- Approval & Blockchain Endpoints ---

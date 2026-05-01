@@ -16,6 +16,9 @@ public class DocumentoJuntaVecinal extends Documento {
     @Column(name = "junta_vecinos_id")
     private Long juntaVecinosId;
 
+    @Column(name = "nombre_junta_vecinal")
+    private String nombreJuntaVecinal;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_acta", nullable = false)
     private TipoDocumentoJJVV tipoActa;
