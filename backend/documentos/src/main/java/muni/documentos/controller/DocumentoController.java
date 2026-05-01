@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/documentos")
+@RequestMapping("/documentos")
 @RequiredArgsConstructor
 public class DocumentoController {
 
@@ -27,7 +27,7 @@ public class DocumentoController {
 
     // --- Creation Endpoints ---
 
-    @PostMapping("/jjvv")
+    @PostMapping("/junta-vecinal")
     public DocumentoJuntaVecinal createJJVV(@RequestBody DocumentoJuntaVecinal doc, 
                                             @RequestParam(defaultValue = "true") boolean isSimple) {
         return documentoService.createJuntaVecinalDoc(doc, isSimple);

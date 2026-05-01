@@ -1,0 +1,42 @@
+services:
+  postgres-documentos:
+    image: postgres:16-alpine
+    container_name: postgres-documentos
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: documentos_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5433:5432" # Puerto 5433 en el host para evitar conflicto con el servicio de usuarios (5432)
+    volumes:
+      - postgres_documentos_data:/var/lib/postgresql/data
+
+  app-documentos:
+    build: .
+    container_name: app-documentos
+    restart: unless-stopped
+    ports:
+      - "8087:8087"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-documentos:5432/documentos_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - postgres-documentos
+
+  pgadmin-documentos:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-documentos
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@muni.cl
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5051:80" # Puerto 5051 para evitar choque con el de usuarios (5050)
+    depends_on:
+      - postgres-documentos
+
+volumes:
+  postgres_documentos_data:
