@@ -5,6 +5,7 @@ import muni.documentos.model.entity.DocumentoJuntaVecinal;
 import muni.documentos.model.entity.DocumentoLicitacion;
 import muni.documentos.model.entity.DocumentoContrato;
 import muni.documentos.model.entity.DocumentoSalvoconducto;
+import muni.documentos.model.entity.DocumentoResidencia;
 import java.util.List;
 
 public interface DocumentoService {
@@ -19,6 +20,7 @@ public interface DocumentoService {
     DocumentoLicitacion createLicitacionDoc(DocumentoLicitacion doc, boolean isSimple);
     DocumentoContrato createContratoDoc(DocumentoContrato doc, boolean isSimple);
     DocumentoSalvoconducto createSalvoconductoDoc(DocumentoSalvoconducto doc, boolean isSimple);
+    DocumentoResidencia createResidenciaDoc(DocumentoResidencia doc, boolean isSimple);
 
     // Approval logic
     Documento approveDocument(Long id);

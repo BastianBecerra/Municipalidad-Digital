@@ -60,6 +60,12 @@ public class DocumentoController {
         return documentoService.createSalvoconductoDoc(doc, isSimple);
     }
 
+    @PostMapping("/residencia")
+    public DocumentoResidencia createResidencia(@RequestBody DocumentoResidencia doc,
+                                                @RequestParam(defaultValue = "true") boolean isSimple) {
+        return documentoService.createResidenciaDoc(doc, isSimple);
+    }
+
     // --- Approval & Blockchain Endpoints ---
 
     @PostMapping("/{id}/aprobar")

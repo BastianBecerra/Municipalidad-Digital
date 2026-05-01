@@ -10,4 +10,7 @@ public class UsuarioDTO {
     private String apellidoMaterno;
     private String rut;
     private String email;
+    private String direccion;
+    private String comuna;
+    private String region;
 }

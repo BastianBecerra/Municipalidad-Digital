@@ -30,6 +30,7 @@ public class DocumentoServiceImpl implements DocumentoService {
     private final DocumentoLicitacionRepository licitacionRepository;
     private final DocumentoContratoRepository contratoRepository;
     private final DocumentoSalvoconductoRepository salvoconductoRepository;
+    private final DocumentoResidenciaRepository residenciaRepository;
     private final RestTemplate restTemplate;
     private final PdfService pdfService;
 
@@ -125,6 +126,36 @@ public class DocumentoServiceImpl implements DocumentoService {
         
         processDocument(doc, isSimple);
         return salvoconductoRepository.save(doc);
+    }
+
+    @Override
+    @Transactional
+    public DocumentoResidencia createResidenciaDoc(DocumentoResidencia doc, boolean isSimple) {
+        if (doc.getUsuarioId() != null) {
+            try {
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("X-Internal-Token", "muni-digital-secret-token-2024");
+                HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+                UsuarioDTO usuario = restTemplate.exchange(
+                        usuariosApiUrl + "/" + doc.getUsuarioId(),
+                        HttpMethod.GET,
+                        entity,
+                        UsuarioDTO.class
+                ).getBody();
+
+                if (usuario != null) {
+                    doc.setUsuarioNombreCompleto(usuario.getNombres() + " " + usuario.getApellidoPaterno() + " " + (usuario.getApellidoMaterno() != null ? usuario.getApellidoMaterno() : ""));
+                    doc.setUsuarioRut(usuario.getRut());
+                    doc.setUsuarioDireccion(usuario.getDireccion());
+                    doc.setUsuarioComuna(usuario.getComuna());
+                }
+            } catch (Exception e) {
+                System.err.println("Error al obtener usuario: " + e.getMessage());
+            }
+        }
+        processDocument(doc, isSimple);
+        return residenciaRepository.save(doc);
     }
 
     @Override
