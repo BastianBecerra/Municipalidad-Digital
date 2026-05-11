@@ -44,7 +44,6 @@ const comunasData = [
   }
 ];
 
-// Component to recenter map when comuna changes
 const MapRecenter = ({ coords }) => {
   const map = useMap();
   useEffect(() => {
