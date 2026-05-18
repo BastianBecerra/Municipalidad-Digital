@@ -1,0 +1,98 @@
+.map-section {
+  padding: 5rem 0;
+  background-color: var(--bg-color);
+}
+
+.map-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.map-container-glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  margin-top: 2rem;
+}
+
+.comuna-selector-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.comuna-label {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 1.125rem;
+}
+
+.comuna-select {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+  min-width: 250px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.comuna-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.map-wrapper {
+  width: 100%;
+  height: 500px;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Keep map below navbar */
+}
+
+/* Fix popup styling to match theme */
+.leaflet-popup-content-wrapper {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(8px);
+}
+
+.leaflet-popup-tip {
+  background-color: var(--card-bg);
+}
+
+@media (max-width: 768px) {
+  .comuna-selector-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .comuna-select {
+    width: 100%;
+  }
+
+  .map-wrapper {
+    height: 400px;
+  }
+}
