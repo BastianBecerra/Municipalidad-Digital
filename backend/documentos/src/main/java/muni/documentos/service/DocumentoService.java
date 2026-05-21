@@ -12,6 +12,7 @@ public interface DocumentoService {
     // Generics for general operations
     List<Documento> findAll();
     Documento findById(Long id);
+    List<Documento> findByUsuarioRut(String rut);
 
     byte[] generatePdf(Long id);
 
