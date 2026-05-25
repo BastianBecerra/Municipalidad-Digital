@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -44,7 +44,6 @@ const comunasData = [
   }
 ];
 
-// Component to recenter map when comuna changes
 const MapRecenter = ({ coords }) => {
   const map = useMap();
   useEffect(() => {

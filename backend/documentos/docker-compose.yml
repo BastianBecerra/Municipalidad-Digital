@@ -19,12 +19,15 @@ services:
     container_name: app-documentos
     restart: unless-stopped
     ports:
-      - "8087:8087"
+      - "8088:8088"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-documentos:5432/documentos_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      MUNI_BLOCKCHAIN_URL: http://host.docker.internal:8087/api/blockchain
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - postgres-documentos
     networks:

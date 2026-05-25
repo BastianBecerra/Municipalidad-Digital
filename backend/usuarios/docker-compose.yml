@@ -24,6 +24,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin123
     depends_on:
       - postgres-usuarios
+    networks:
+      - default
+      - muni-network
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -39,3 +42,7 @@ services:
 
 volumes:
   postgres_usuarios_data:
+
+networks:
+  muni-network:
+    external: true
