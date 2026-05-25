@@ -133,6 +133,21 @@ public class DocumentoController {
         return ResponseEntity.ok().build();
     }
 
+    // --- Public Validation Endpoints ---
+
+    @GetMapping("/public/hash/{hash}")
+    public ResponseEntity<?> getPublicByHash(@PathVariable String hash) {
+        if (hash == null || !hash.matches("^[a-fA-F0-9]{64}$")) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", "Formato de hash no válido"));
+        }
+        try {
+            Documento doc = documentoService.findByHashSha256(hash);
+            return ResponseEntity.ok(doc);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(java.util.Map.of("message", e.getMessage()));
+        }
+    }
+
     // --- Helper Methods ---
 
     private boolean hasAdministrativePrivileges(Authentication authentication) {

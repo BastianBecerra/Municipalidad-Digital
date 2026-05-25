@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DocumentoRepository extends JpaRepository<Documento, Long> {
@@ -18,4 +19,6 @@ public interface DocumentoRepository extends JpaRepository<Documento, Long> {
         "WHERE r.usuario_rut = :rut OR s.usuario_rut = :rut", 
         nativeQuery = true)
     List<Documento> findByUsuarioRut(@Param("rut") String rut);
+
+    Optional<Documento> findByHashSha256(String hashSha256);
 }

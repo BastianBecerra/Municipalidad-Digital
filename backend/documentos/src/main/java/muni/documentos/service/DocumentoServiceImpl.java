@@ -128,7 +128,15 @@ public class DocumentoServiceImpl implements DocumentoService {
         }
 
         processDocument(doc, isSimple);
-        return salvoconductoRepository.save(doc);
+        DocumentoSalvoconducto savedDoc = salvoconductoRepository.save(doc);
+        if (isSimple) {
+            try {
+                syncWithBlockchain(savedDoc.getId());
+            } catch (Exception e) {
+                System.err.println("Error en la sincronización automática de blockchain: " + e.getMessage());
+            }
+        }
+        return savedDoc;
     }
 
     @Override
@@ -163,7 +171,15 @@ public class DocumentoServiceImpl implements DocumentoService {
             }
         }
         processDocument(doc, isSimple);
-        return residenciaRepository.save(doc);
+        DocumentoResidencia savedDoc = residenciaRepository.save(doc);
+        if (isSimple) {
+            try {
+                syncWithBlockchain(savedDoc.getId());
+            } catch (Exception e) {
+                System.err.println("Error en la sincronización automática de blockchain: " + e.getMessage());
+            }
+        }
+        return savedDoc;
     }
 
     @Override
@@ -216,6 +232,12 @@ public class DocumentoServiceImpl implements DocumentoService {
         }
 
         documentoRepository.save(doc);
+    }
+
+    @Override
+    public Documento findByHashSha256(String hash) {
+        return documentoRepository.findByHashSha256(hash)
+                .orElseThrow(() -> new RuntimeException("Documento no encontrado con el hash especificado"));
     }
 
     // --- Private Helper Methods ---

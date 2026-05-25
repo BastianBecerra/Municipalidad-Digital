@@ -28,4 +28,6 @@ public interface DocumentoService {
 
     // Blockchain sync placeholder
     void syncWithBlockchain(Long id);
+
+    Documento findByHashSha256(String hash);
 }

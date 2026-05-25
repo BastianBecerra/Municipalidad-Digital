@@ -18,6 +18,14 @@ export default defineConfig({
         target: 'http://localhost:8087',
         changeOrigin: true,
       },
+      '/documentos': {
+        target: 'http://localhost:8088',
+        changeOrigin: true,
+      },
+      '/api/validacion': {
+        target: 'http://localhost:8089',
+        changeOrigin: true,
+      },
     },
   },
 })

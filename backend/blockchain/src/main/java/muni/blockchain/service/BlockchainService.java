@@ -49,7 +49,13 @@ public class BlockchainService {
     private String contractAddress;
 
     public String registrarDocumento(String documentId, String content) throws Exception {
-        byte[] hashBytes = generarHash(content);
+        byte[] hashBytes;
+        String cleanContent = content.startsWith("0x") ? content.substring(2) : content;
+        if (cleanContent.matches("^[0-9a-fA-F]{64}$")) {
+            hashBytes = Numeric.hexStringToByteArray(cleanContent);
+        } else {
+            hashBytes = generarHash(content);
+        }
         Bytes32 hashBytes32 = new Bytes32(hashBytes);
 
         Function function = new Function(

@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Contact from './pages/Contact';
 import Profile from './pages/Profile';
 import BlockchainTest from './pages/BlockchainTest';
+import ValidarDocumento from './pages/ValidarDocumento';
 
 function App() {
   return (
@@ -14,6 +15,8 @@ function App() {
         <Route path="/contacto" element={<Contact />} />
         <Route path="/perfil" element={<Profile />} />
         <Route path="/blockchain" element={<BlockchainTest />} />
+        <Route path="/validar" element={<ValidarDocumento />} />
+        <Route path="/validar/:hash" element={<ValidarDocumento />} />
       </Routes>
     </Router>
   );
