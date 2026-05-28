@@ -43,6 +43,9 @@ public class DocumentoServiceImpl implements DocumentoService {
     @Value("${muni.blockchain.url:http://localhost:8087/api/blockchain}")
     private String blockchainApiUrl;
 
+    @Value("${muni.notificacion.url:http://localhost:8090/api/notificaciones/public}")
+    private String notificacionApiUrl;
+
     @Override
     public List<Documento> findAll() {
         return documentoRepository.findAll();
@@ -191,7 +194,86 @@ public class DocumentoServiceImpl implements DocumentoService {
         }
 
         finalizeDocument(doc);
-        return documentoRepository.save(doc);
+        Documento savedDoc = documentoRepository.save(doc);
+
+        // Intentar obtener los datos del destinatario para enviar la notificación
+        String emailDestinatario = "contacto@municipalidad.cl"; // default fallback
+        String nombreDestinatario = "Ciudadano"; // default fallback
+        String tipoDoc = "DOCUMENTO";
+
+        if (savedDoc instanceof DocumentoContrato) {
+            tipoDoc = "CONTRATO";
+            DocumentoContrato contrato = (DocumentoContrato) savedDoc;
+            if (contrato.getRutContratista() != null) {
+                UsuarioDTO usuario = fetchUsuarioByRut(contrato.getRutContratista());
+                if (usuario != null) {
+                    emailDestinatario = usuario.getEmail();
+                    nombreDestinatario = usuario.getNombres() + " " + usuario.getApellidoPaterno();
+                }
+            }
+        } else if (savedDoc instanceof DocumentoLicitacion) {
+            tipoDoc = "LICITACION";
+            nombreDestinatario = "Portal de Compras Municipal";
+            emailDestinatario = "adquisiciones@municipalidad.cl";
+        } else if (savedDoc instanceof DocumentoSalvoconducto) {
+            tipoDoc = "SALVOCONDUCTO";
+            DocumentoSalvoconducto salvoconducto = (DocumentoSalvoconducto) savedDoc;
+            if (salvoconducto.getUsuarioRut() != null) {
+                UsuarioDTO usuario = fetchUsuarioByRut(salvoconducto.getUsuarioRut());
+                if (usuario != null) {
+                    emailDestinatario = usuario.getEmail();
+                    nombreDestinatario = usuario.getNombres() + " " + usuario.getApellidoPaterno();
+                }
+            }
+            if (salvoconducto.getUsuarioNombreCompleto() != null && !salvoconducto.getUsuarioNombreCompleto().isEmpty()) {
+                nombreDestinatario = salvoconducto.getUsuarioNombreCompleto();
+            }
+        } else if (savedDoc instanceof DocumentoResidencia) {
+            tipoDoc = "RESIDENCIA";
+            DocumentoResidencia residencia = (DocumentoResidencia) savedDoc;
+            if (residencia.getUsuarioRut() != null) {
+                UsuarioDTO usuario = fetchUsuarioByRut(residencia.getUsuarioRut());
+                if (usuario != null) {
+                    emailDestinatario = usuario.getEmail();
+                    nombreDestinatario = usuario.getNombres() + " " + usuario.getApellidoPaterno();
+                }
+            }
+            if (residencia.getUsuarioNombreCompleto() != null && !residencia.getUsuarioNombreCompleto().isEmpty()) {
+                nombreDestinatario = residencia.getUsuarioNombreCompleto();
+            }
+        } else if (savedDoc instanceof DocumentoJuntaVecinal) {
+            tipoDoc = "ACTA_JUNTA_VECINAL";
+            DocumentoJuntaVecinal jjvv = (DocumentoJuntaVecinal) savedDoc;
+            if (jjvv.getRutMinistroDeFe() != null) {
+                UsuarioDTO usuario = fetchUsuarioByRut(jjvv.getRutMinistroDeFe());
+                if (usuario != null) {
+                    emailDestinatario = usuario.getEmail();
+                    nombreDestinatario = usuario.getNombres() + " " + usuario.getApellidoPaterno();
+                }
+            }
+        }
+
+        // Realizar la llamada REST al microservicio de notificaciones
+        try {
+            java.util.Map<String, String> notifRequest = new java.util.HashMap<>();
+            notifRequest.put("email", emailDestinatario);
+            notifRequest.put("nombreCompleto", nombreDestinatario);
+            notifRequest.put("documentId", "DOC-" + savedDoc.getId());
+            notifRequest.put("tipoDocumento", tipoDoc);
+            notifRequest.put("titulo", savedDoc.getTitulo());
+            notifRequest.put("hashBlockchain", savedDoc.getBlockchainTxHash());
+
+            restTemplate.postForObject(
+                    notificacionApiUrl + "/documento-aprobado",
+                    notifRequest,
+                    String.class
+            );
+            System.out.println("✓ Solicitud de notificación de aprobación enviada con éxito para DOC-" + savedDoc.getId());
+        } catch (Exception e) {
+            System.err.println("⚠ Error al enviar notificación de aprobación a " + notificacionApiUrl + ": " + e.getMessage());
+        }
+
+        return savedDoc;
     }
 
     @Override
@@ -310,6 +392,22 @@ public class DocumentoServiceImpl implements DocumentoService {
                 HttpMethod.GET,
                 new HttpEntity<>(getForwardedHeaders()),
                 UsuarioDTO.class).getBody();
+    }
+
+    private UsuarioDTO fetchUsuarioByRut(String rut) {
+        if (rut == null || rut.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return restTemplate.exchange(
+                    usuariosApiUrl + "/rut/" + rut,
+                    HttpMethod.GET,
+                    new HttpEntity<>(getForwardedHeaders()),
+                    UsuarioDTO.class).getBody();
+        } catch (Exception e) {
+            System.err.println("Error al buscar usuario por RUT " + rut + ": " + e.getMessage());
+            return null;
+        }
     }
 
     private String generateHash(String input) {
