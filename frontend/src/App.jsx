@@ -5,6 +5,7 @@ import Contact from './pages/Contact';
 import Profile from './pages/Profile';
 import BlockchainTest from './pages/BlockchainTest';
 import ValidarDocumento from './pages/ValidarDocumento';
+import GenerarDocumento from './pages/GenerarDocumento';
 import AccessibilityMenu from './components/AccessibilityMenu';
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/contacto" element={<Contact />} />
         <Route path="/perfil" element={<Profile />} />
-        <Route path="/blockchain" element={<BlockchainTest />} />
+        <Route path="/blockchain-test" element={<BlockchainTest />} />
+        <Route path="/tramites/nuevo" element={<GenerarDocumento />} />
         <Route path="/validar" element={<ValidarDocumento />} />
         <Route path="/validar/:hash" element={<ValidarDocumento />} />
       </Routes>

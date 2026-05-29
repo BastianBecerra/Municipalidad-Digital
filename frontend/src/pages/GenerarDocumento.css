@@ -1,0 +1,151 @@
+.generar-doc-page {
+  min-height: 100vh;
+  padding-top: 100px;
+  padding-bottom: 60px;
+}
+
+.generar-doc-container {
+  display: flex;
+  justify-content: center;
+}
+
+.generar-card {
+  width: 100%;
+  max-width: 700px;
+  padding: 40px;
+}
+
+.generar-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.generar-header .icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.generar-header h1 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.generar-header p {
+  color: var(--text-muted);
+}
+
+.generar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.help-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: block;
+}
+
+.btn-submit {
+  margin-top: 10px;
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 1rem;
+}
+
+/* Inline Field Validation */
+.cu-input.input-error {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.cu-input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+.field-error {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: block;
+  animation: fadeInError 0.3s ease;
+}
+
+@keyframes fadeInError {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Status boxes reused from BlockchainTest styles, but adjusted for the solid theme */
+.status-box {
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.error-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.success-box {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.success-box h3 {
+  color: var(--secondary-color);
+  margin-bottom: 5px;
+}
+
+.success-box p {
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.animate-in {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

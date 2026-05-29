@@ -41,7 +41,7 @@ const ProcedureCards = () => {
               </div>
               <h3 className="card-title">{proc.title}</h3>
               <p className="card-desc">{proc.description}</p>
-              <a href="#" className="card-link">
+              <a href="/tramites/nuevo" className="card-link">
                 Iniciar trámite <span>→</span>
               </a>
             </div>

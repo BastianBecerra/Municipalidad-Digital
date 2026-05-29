@@ -13,7 +13,7 @@ const HeroSection = () => {
             Solicita certificados, realiza pagos y sin hacer fila!. Todo desde la comodidad de tu hogar.
           </p>
           <div className="hero-buttons">
-            <button className="btn btn-primary btn-lg">Iniciar Trámite</button>
+            <a href="/tramites/nuevo" className="btn btn-primary btn-lg">Iniciar Trámite</a>
             <button className="btn btn-secondary btn-lg">Ver Guía de Uso</button>
           </div>
 
