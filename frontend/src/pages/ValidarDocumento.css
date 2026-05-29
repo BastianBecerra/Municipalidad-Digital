@@ -3,9 +3,7 @@
    ========================================== */
 
 .validar-page {
-  background: radial-gradient(circle at 50% 0%, #0d284f 0%, #030a16 100%);
   min-height: 100vh;
-  color: #f1f5f9;
   display: flex;
   flex-direction: column;
 }
@@ -39,31 +37,22 @@
 .validar-header h1 {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--primary-color);
   margin-bottom: 12px;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #ffffff 30%, #93c5fd 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .validar-header .subtitle {
   font-size: 1.1rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   max-width: 650px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
-/* --- Contenedor Principal (Glassmorphism) --- */
+/* --- Contenedor Principal --- */
 .validar-body.glass-card {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* --- Menú de Inicio (Selección de Método) --- */
@@ -103,11 +92,11 @@
   font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 10px;
-  color: #fff;
+  color: var(--text-color);
 }
 
 .init-menu p {
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 35px;
 }
 
@@ -153,13 +142,13 @@
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: #e2e8f0;
-  border-color: rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(37, 99, 235, 0.1);
   transform: translateY(-2px);
 }
 
@@ -175,13 +164,13 @@
 
 .btn-outline {
   background: transparent;
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-color);
+  border-color: var(--border-color);
   margin-top: 15px;
 }
 
 .btn-outline:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--border-color);
 }
 
 /* --- Lector QR Activo (Cámara) --- */
@@ -261,14 +250,14 @@
 
 .camera-selector label {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 .camera-selector select {
-  background: rgba(15, 23, 42, 0.8);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   padding: 10px 14px;
   border-radius: 8px;
   font-weight: 500;
@@ -293,12 +282,12 @@
 
 .validation-loader h3 {
   font-size: 1.4rem;
-  color: white;
+  color: var(--text-color);
   margin-bottom: 8px;
 }
 
 .validation-loader p {
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 /* --- Alerta / Errores --- */
@@ -373,7 +362,7 @@
 
 .result-valid .result-badge .badge-icon {
   background: #10b981;
-  color: #030712;
+  color: #ffffff;
 }
 
 .result-invalid .result-badge {
@@ -395,11 +384,11 @@
 }
 
 .result-valid .result-motivo {
-  color: #a7f3d0;
+  color: var(--secondary-color);
 }
 
 .result-invalid .result-motivo {
-  color: #fca5a5;
+  color: #ef4444;
 }
 
 /* Rejilla de Tarjetas */
@@ -418,22 +407,22 @@
 .result-card {
   padding: 24px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
 }
 
 .result-card h4 {
   font-size: 1.1rem;
   font-weight: 700;
   margin-bottom: 12px;
-  color: #fff;
+  color: var(--text-color);
   letter-spacing: 0.2px;
 }
 
 .result-card hr {
   border: 0;
   height: 1px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-color);
   margin-bottom: 20px;
 }
 
@@ -442,7 +431,7 @@
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border-color);
   font-size: 0.95rem;
   gap: 15px;
 }
@@ -452,30 +441,30 @@
 }
 
 .data-row .label {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 500;
   flex-shrink: 0;
 }
 
 .data-row .value {
-  color: #e2e8f0;
+  color: var(--text-color);
   text-align: right;
   word-break: break-all;
 }
 
 .data-row .value.bold {
   font-weight: 700;
-  color: #fff;
+  color: var(--text-color);
 }
 
 .data-row .value.font-accent {
-  color: #38bdf8;
+  color: var(--primary-color);
   font-weight: 600;
 }
 
 .data-row .value.code-text {
   font-family: 'Courier New', Courier, monospace;
-  color: #cbd5e1;
+  color: var(--text-muted);
 }
 
 .font-small-code {

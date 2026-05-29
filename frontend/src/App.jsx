@@ -5,6 +5,7 @@ import Contact from './pages/Contact';
 import Profile from './pages/Profile';
 import BlockchainTest from './pages/BlockchainTest';
 import ValidarDocumento from './pages/ValidarDocumento';
+import AccessibilityMenu from './components/AccessibilityMenu';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/validar" element={<ValidarDocumento />} />
         <Route path="/validar/:hash" element={<ValidarDocumento />} />
       </Routes>
+      <AccessibilityMenu />
     </Router>
   );
 }

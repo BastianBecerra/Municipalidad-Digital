@@ -1,0 +1,129 @@
+.accessibility-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.acc-toggle-btn {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+body.high-contrast .acc-toggle-btn {
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+}
+
+.acc-toggle-btn:hover {
+  transform: scale(1.05);
+  background-color: var(--primary-hover);
+}
+
+.acc-panel {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  width: 300px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.acc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.acc-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.acc-close {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.acc-close:hover {
+  color: var(--text-color);
+}
+
+.acc-body {
+  padding: 16px;
+}
+
+.acc-section {
+  margin-bottom: 16px;
+}
+
+.acc-section:last-child {
+  margin-bottom: 0;
+}
+
+.acc-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.acc-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.acc-btn {
+  flex: 1;
+  padding: 8px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.acc-btn-block {
+  width: 100%;
+}
+
+.acc-btn:hover {
+  background-color: var(--border-color);
+}
+
+.acc-btn.active {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border-color: var(--primary-color);
+}
+
+body.high-contrast .acc-btn.active {
+  color: var(--bg-color);
+}

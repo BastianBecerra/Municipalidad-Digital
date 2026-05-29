@@ -12,11 +12,9 @@
 }
 
 .navbar.scrolled {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
   height: 70px;
 }
 
@@ -37,9 +35,7 @@
 }
 
 .logo-text {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary-color);
 }
 
 .nav-links {

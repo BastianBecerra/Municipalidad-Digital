@@ -7,11 +7,9 @@
 /* ClaveÚnica Header */
 .clave-unica-header {
   width: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: var(--glass-border);
+  box-shadow: var(--shadow-sm);
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .cu-header-content {
@@ -48,12 +46,10 @@
 
 .login-card {
   background: var(--card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: var(--glass-border);
+  border: 1px solid var(--border-color);
   padding: 2.5rem;
   border-radius: 1.5rem;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow-md);
   width: 100%;
   max-width: 450px;
 }
@@ -116,7 +112,7 @@
 
 .cu-input {
   padding: 0.875rem 1rem;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--bg-color);
   border: 1px solid var(--border-color);
   color: var(--text-color);
   border-radius: 0.5rem;

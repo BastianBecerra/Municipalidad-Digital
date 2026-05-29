@@ -34,9 +34,7 @@
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary-color);
 }
 
 .hero-subtitle {
@@ -81,12 +79,10 @@
 }
 
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: var(--glass-border);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 1.5rem;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow-md);
 }
 
 .mockup-card {
