@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import './AccessibilityMenu.css';
 
+// Componente: Menú flotante de accesibilidad para personalizar la interfaz
 const AccessibilityMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [textSize, setTextSize] = useState('normal'); // normal, large, xlarge
-  const [highContrast, setHighContrast] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // Estado para abrir/cerrar el panel
+  const [textSize, setTextSize] = useState('normal'); // Tamaño del texto actual
+  const [highContrast, setHighContrast] = useState(false); // Estado del alto contraste
 
-  // Cargar preferencias al iniciar
+  // Efecto: Cargar preferencias guardadas al iniciar la aplicación
   useEffect(() => {
     const savedTextSize = localStorage.getItem('acc-text-size') || 'normal';
     const savedContrast = localStorage.getItem('acc-contrast') === 'true';
@@ -14,27 +15,31 @@ const AccessibilityMenu = () => {
     setTextSize(savedTextSize);
     setHighContrast(savedContrast);
     
+    // Aplicamos los ajustes al cargar la página
     applySettings(savedTextSize, savedContrast);
   }, []);
 
+  // Función principal: Aplica las clases de accesibilidad al body del documento
   const applySettings = (size, contrast) => {
-    // Reset classes
+    // Primero limpiamos las clases antiguas para evitar conflictos
     document.body.classList.remove('text-large', 'text-xlarge', 'high-contrast');
 
-    // Apply text size
+    // Aplicamos el tamaño de fuente elegido
     if (size === 'large') document.body.classList.add('text-large');
     if (size === 'xlarge') document.body.classList.add('text-xlarge');
 
-    // Apply contrast
+    // Aplicamos el contraste si está activado
     if (contrast) document.body.classList.add('high-contrast');
   };
 
+  // Manejador para cambiar el tamaño de fuente y persistirlo
   const handleTextSizeChange = (size) => {
     setTextSize(size);
     localStorage.setItem('acc-text-size', size);
     applySettings(size, highContrast);
   };
 
+  // Manejador para activar/desactivar alto contraste y persistirlo
   const toggleContrast = () => {
     const newContrast = !highContrast;
     setHighContrast(newContrast);
@@ -44,6 +49,7 @@ const AccessibilityMenu = () => {
 
   return (
     <div className={`accessibility-widget ${isOpen ? 'open' : ''}`}>
+      {/* Botón flotante para abrir el menú */}
       <button 
         className="acc-toggle-btn" 
         onClick={() => setIsOpen(!isOpen)}
@@ -55,6 +61,7 @@ const AccessibilityMenu = () => {
         </svg>
       </button>
 
+      {/* Panel de configuración, solo visible si isOpen es true */}
       {isOpen && (
         <div className="acc-panel">
           <div className="acc-header">
@@ -63,32 +70,28 @@ const AccessibilityMenu = () => {
           </div>
           
           <div className="acc-body">
+            {/* Sección de tamaño de fuente */}
             <div className="acc-section">
               <h4>Tamaño de Texto</h4>
               <div className="acc-buttons">
                 <button 
                   className={`acc-btn ${textSize === 'normal' ? 'active' : ''}`}
                   onClick={() => handleTextSizeChange('normal')}
-                >
-                  A
-                </button>
+                >A</button>
                 <button 
                   className={`acc-btn ${textSize === 'large' ? 'active' : ''}`}
                   style={{fontSize: '1.2rem'}}
                   onClick={() => handleTextSizeChange('large')}
-                >
-                  A
-                </button>
+                >A</button>
                 <button 
                   className={`acc-btn ${textSize === 'xlarge' ? 'active' : ''}`}
                   style={{fontSize: '1.4rem'}}
                   onClick={() => handleTextSizeChange('xlarge')}
-                >
-                  A
-                </button>
+                >A</button>
               </div>
             </div>
 
+            {/* Sección de contraste */}
             <div className="acc-section">
               <h4>Contraste</h4>
               <button 

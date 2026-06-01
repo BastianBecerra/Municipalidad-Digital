@@ -2,20 +2,24 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
+// Componente Login: Maneja la autenticación del usuario
 const Login = () => {
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [identifier, setIdentifier] = useState(''); // Puede ser Email o RUT
+  const [password, setPassword] = useState('');     // Contraseña o ClaveÚnica
+  const [error, setError] = useState('');           // Mensaje de error para el usuario
+  const [loading, setLoading] = useState(false);    // Estado de carga para el botón
   const navigate = useNavigate();
 
+  // Lógica simple para detectar si es email o RUT buscando el carácter '@'
   const isEmail = identifier.includes('@');
 
+  // Manejador del envío del formulario
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    // Preparamos el cuerpo de la petición según el tipo de identificador
     const body = isEmail
       ? { email: identifier, password }
       : { rut: identifier, password };
@@ -27,14 +31,16 @@ const Login = () => {
         body: JSON.stringify(body),
       });
 
+      // Si la respuesta no es 200 OK, lanzamos un error
       if (!response.ok) {
         const msg = await response.text();
         throw new Error(msg || 'Credenciales incorrectas');
       }
 
+      // Guardamos el token en localStorage para mantener la sesión
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      navigate('/');
+      navigate('/'); // Redirigimos al inicio tras éxito
     } catch (err) {
       setError(
         isEmail
@@ -48,6 +54,7 @@ const Login = () => {
 
   return (
     <div className="login-page gradient-bg">
+      {/* Cabecera del login */}
       <div className="clave-unica-header glass-header">
         <div className="cu-header-content">
           <div className="cu-logo">
@@ -63,6 +70,7 @@ const Login = () => {
           <h2 className="login-title">Bienvenido de vuelta</h2>
           <p className="login-hint">Ingresa tu RUN o correo electrónico para continuar.</p>
 
+          {/* Mensaje de error dinámico */}
           {error && <div className="login-error">{error}</div>}
 
           <form onSubmit={handleLogin} className="login-form">
@@ -80,6 +88,7 @@ const Login = () => {
             </div>
 
             <div className="form-group">
+              {/* Etiqueta dinámica: cambia según el método de autenticación detectado */}
               <label htmlFor="password">
                 {isEmail ? 'Contraseña' : 'ClaveÚnica'}
               </label>
@@ -104,6 +113,7 @@ const Login = () => {
           </div>
         </div>
 
+        {/* Botón de navegación para regresar */}
         <div className="login-back-wrapper">
           <button onClick={() => navigate('/')} className="btn-back">
             ← Volver a Muni Digital
@@ -111,7 +121,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Auras de fondo (Floating shapes) */}
+      {/* Auras decorativas de fondo */}
       <div className="floating-shape shape-1"></div>
       <div className="floating-shape shape-2"></div>
     </div>

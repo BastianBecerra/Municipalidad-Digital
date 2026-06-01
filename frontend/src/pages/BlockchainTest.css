@@ -1,3 +1,8 @@
+/* ==========================================
+   VERIFICADOR BLOCKCHAIN - ESTILOS
+   Estructura: Layout, Formulario de entrada y Cajas de resultados
+   ========================================== */
+
 .blockchain-page {
   min-height: 100vh;
   padding-top: 100px;
@@ -9,6 +14,7 @@
   padding: 40px 20px;
 }
 
+/* Tarjeta contenedora con diseño modular */
 .blockchain-card {
   width: 100%;
   max-width: 700px;
@@ -22,6 +28,7 @@
   gap: 30px;
 }
 
+/* --- Cabecera de la sección --- */
 .blockchain-header {
   text-align: center;
 }
@@ -42,6 +49,7 @@
   color: var(--text-muted);
 }
 
+/* --- Formulario de entrada --- */
 .form-section {
   display: flex;
   flex-direction: column;
@@ -85,6 +93,7 @@
   margin-top: 10px;
 }
 
+/* --- Cajas de estado (Feedback de la operación) --- */
 .status-box {
   padding: 20px;
   border-radius: 16px;
@@ -97,20 +106,23 @@
   font-size: 24px;
 }
 
+/* Estilos de error (Rojo) */
 .error-box {
   background: rgba(255, 71, 87, 0.1);
   border: 1px solid rgba(255, 71, 87, 0.2);
   color: #ff4757;
 }
 
+/* Estilos de éxito (Verde) */
 .success-box {
   background: rgba(46, 213, 115, 0.1);
   border: 1px solid rgba(46, 213, 115, 0.2);
 }
 
 .success-box h3 { color: #059669; margin-bottom: 5px; }
-.success-box p { color: var(--text-muted); font-size: 0.9rem; }
+.success-box p { color: var(--text-muted); font-size: 0.95rem; }
 
+/* Visualización del hash de transacción (Tx Hash) */
 .tx-hash {
   display: block;
   margin-top: 10px;
@@ -119,9 +131,10 @@
   border-radius: 6px;
   font-size: 0.8rem;
   color: var(--primary-color);
-  word-break: break-all;
+  word-break: break-all; /* Rompe el hash si es muy largo para no romper el layout */
 }
 
+/* Estilo para la verificación de integridad */
 .verify-box {
   background: rgba(79, 172, 254, 0.1);
   border: 1px solid rgba(79, 172, 254, 0.2);
@@ -129,6 +142,7 @@
 
 .verify-box h3 { color: var(--primary-color); margin-bottom: 15px; }
 
+/* Grilla de datos recuperados */
 .data-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -165,6 +179,7 @@
   font-size: 0.8rem;
 }
 
+/* --- Animaciones --- */
 .animate-in {
   animation: slideUp 0.4s ease-out forwards;
 }
@@ -174,8 +189,9 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* --- Responsividad --- */
 @media (max-width: 600px) {
   .actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Botones apilados en móvil */
   }
 }

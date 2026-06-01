@@ -1,15 +1,19 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import './BlockchainTest.css';
 
+// Componente: Interfaz de pruebas para la integración con Blockchain
 const BlockchainTest = () => {
+  // Estados locales para manejar los datos del documento y la respuesta del servidor
   const [docId, setDocId] = useState('CERT-' + Math.floor(Math.random() * 10000));
   const [content, setContent] = useState('Este es un certificado de residencia para prueba de blockchain.');
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Indica si hay una petición en curso
+  const [result, setResult] = useState(null);    // Guarda el resultado (éxito o verificación)
+  const [error, setError] = useState(null);      // Guarda mensajes de error
 
+  // Función: Registra el hash del documento en el ledger (Blockchain)
   const handleRegister = async () => {
     setLoading(true);
     setError(null);
@@ -21,18 +25,21 @@ const BlockchainTest = () => {
         body: JSON.stringify({ documentId: docId, content: content })
       });
       const data = await response.json();
+      
       if (data.status === 'success') {
+        // Almacenamos el hash de la transacción para mostrarlo en la interfaz
         setResult({ type: 'register', txHash: data.transactionHash });
       } else {
         setError(data.message);
       }
     } catch (err) {
-      setError('Error al conectar con el servidor de blockchain. Asegúrate de que el backend esté corriendo en el puerto 8087.');
+      setError('Error al conectar con el servidor de blockchain.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Función: Consulta la Blockchain para validar la existencia e integridad del documento
   const handleVerify = async () => {
     setLoading(true);
     setError(null);
@@ -40,7 +47,9 @@ const BlockchainTest = () => {
     try {
       const response = await fetch(`/api/blockchain/consultar/${docId}`);
       const data = await response.json();
+      
       if (data.status !== 'error') {
+        // Mostramos los datos recuperados de la red (timestamp, hash, origen)
         setResult({ type: 'verify', data: data });
       } else {
         setError(data.message);
@@ -63,6 +72,7 @@ const BlockchainTest = () => {
             <p>Registra y verifica la autenticidad de documentos municipales en tiempo real.</p>
           </div>
 
+          {/* Formulario de registro/consulta */}
           <div className="form-section">
             <div className="input-group">
               <label>ID del Documento</label>
@@ -84,23 +94,16 @@ const BlockchainTest = () => {
             </div>
 
             <div className="actions">
-              <button
-                className="btn btn-primary"
-                onClick={handleRegister}
-                disabled={loading}
-              >
+              <button className="btn btn-primary" onClick={handleRegister} disabled={loading}>
                 {loading ? 'Procesando...' : 'Registrar en Blockchain'}
               </button>
-              <button
-                className="btn btn-secondary"
-                onClick={handleVerify}
-                disabled={loading}
-              >
+              <button className="btn btn-secondary" onClick={handleVerify} disabled={loading}>
                 Verificar Integridad
               </button>
             </div>
           </div>
 
+          {/* Gestión de estados: Error, Registro Exitoso o Verificación */}
           {error && (
             <div className="status-box error-box animate-in">
               <span className="status-icon">⚠️</span>
@@ -121,7 +124,6 @@ const BlockchainTest = () => {
 
           {result && result.type === 'verify' && (
             <div className="status-box verify-box animate-in">
-              <span className="status-icon"></span>
               <div>
                 <h3>Datos Recuperados</h3>
                 <div className="data-grid">
@@ -131,11 +133,8 @@ const BlockchainTest = () => {
                   </div>
                   <div className="data-item">
                     <span>Fecha Registro</span>
+                    {/* Convertimos el timestamp de Unix a formato legible */}
                     <p>{new Date(Number(result.data.timestamp) * 1000).toLocaleString()}</p>
-                  </div>
-                  <div className="data-item">
-                    <span>Billetera Notario</span>
-                    <code>{result.data.registeredBy.substring(0, 20)}...</code>
                   </div>
                 </div>
                 <p className="verified-badge">✓ Documento Auténtico</p>

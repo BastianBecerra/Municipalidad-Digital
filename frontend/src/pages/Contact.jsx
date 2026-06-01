@@ -2,25 +2,30 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Contact.css';
 
+// Componente Contact: Formulario para recibir consultas de los vecinos
 const Contact = () => {
+  // Estado para los datos del formulario y el estado de envío
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
   });
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(false); // Bandera para mostrar mensaje de éxito
   const navigate = useNavigate();
 
+  // Manejador de cambios en los inputs (Patrón de componentes controlados)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
+  // Manejador de envío: Simula una petición a servidor
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Mensaje enviado:", formData);
+    console.log("Mensaje enviado:", formData); // Aquí iría la llamada real a tu API
     setSubmitted(true);
 
+    // Reseteamos el formulario después de 4 segundos
     setTimeout(() => {
       setSubmitted(false);
       setFormData({ name: '', email: '', message: '' });
@@ -37,6 +42,7 @@ const Contact = () => {
             <p className="contact-subtitle">Déjanos tu mensaje y te responderemos lo antes posible.</p>
           </div>
 
+          {/* Renderizado condicional: Mostramos el mensaje de éxito o el formulario */}
           {submitted ? (
             <div className="success-message">
               <div className="success-icon">✅</div>
@@ -94,6 +100,7 @@ const Contact = () => {
           )}
         </div>
 
+        {/* Botón para regresar al Home */}
         <div className="contact-back-wrapper">
           <button onClick={() => navigate('/')} className="btn-back">
             ← Volver al Inicio
@@ -101,7 +108,7 @@ const Contact = () => {
         </div>
       </div>
 
-      {/* Auras de fondo (Floating shapes) idénticas al login/hero */}
+      {/* Auras decorativas de fondo */}
       <div className="floating-shape shape-1"></div>
       <div className="floating-shape shape-2"></div>
     </div>

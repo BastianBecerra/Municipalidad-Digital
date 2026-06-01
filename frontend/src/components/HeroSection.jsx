@@ -1,9 +1,12 @@
 import './HeroSection.css';
 
+// Componente HeroSection: Representa la sección principal (Landing) de la aplicación
 const HeroSection = () => {
   return (
     <section id="inicio" className="hero-section gradient-bg">
       <div className="container hero-container">
+        
+        {/* Contenido principal: Título, descripción y llamados a la acción */}
         <div className="hero-content">
           <span className="badge">Plataforma Ciudadana 100% Digital</span>
           <h1 className="hero-title">
@@ -12,11 +15,14 @@ const HeroSection = () => {
           <p className="hero-subtitle">
             Solicita certificados, realiza pagos y sin hacer fila!. Todo desde la comodidad de tu hogar.
           </p>
+          
+          {/* Botones de acción principales */}
           <div className="hero-buttons">
             <a href="/tramites/nuevo" className="btn btn-primary btn-lg">Iniciar Trámite</a>
             <button className="btn btn-secondary btn-lg">Ver Guía de Uso</button>
           </div>
 
+          {/* Sección de estadísticas rápidas para generar confianza */}
           <div className="stats-container">
             <div className="stat-item">
               <h3>24/7</h3>
@@ -33,13 +39,17 @@ const HeroSection = () => {
           </div>
         </div>
 
+        {/* Sección de imagen/mockup decorativo para el lado derecho del hero */}
         <div className="hero-image-wrapper">
           <div className="glass-card mockup-card">
+            {/* Cabecera del mockup (tipo ventana de sistema) */}
             <div className="mockup-header">
               <span className="dot red"></span>
               <span className="dot yellow"></span>
               <span className="dot green"></span>
             </div>
+            
+            {/* Cuerpo del mockup con placeholders (esqueletos) visuales */}
             <div className="mockup-body">
               <div className="skeleton-line title"></div>
               <div className="skeleton-line"></div>
@@ -53,10 +63,11 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Elementos Decorativos */}
+          {/* Elementos decorativos (formas flotantes) */}
           <div className="floating-shape shape-1"></div>
           <div className="floating-shape shape-2"></div>
         </div>
+        
       </div>
     </section>
   );

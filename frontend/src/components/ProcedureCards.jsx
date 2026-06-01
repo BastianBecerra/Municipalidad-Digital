@@ -1,5 +1,6 @@
 import './ProcedureCards.css';
 
+// Lista de trámites disponibles: Esta estructura permite agregar o modificar trámites fácilmente
 const procedures = [
   {
     id: 1,
@@ -24,8 +25,10 @@ const procedures = [
   }
 ];
 
+// Componente principal: Renderiza la sección de tarjetas con los trámites disponibles
 const ProcedureCards = () => {
   return (
+    // ID 'tramites' definido para el anclaje (scroll automático) desde el menú/footer
     <section id="tramites" className="procedures-section">
       <div className="container">
         <div className="section-header text-center">
@@ -34,8 +37,10 @@ const ProcedureCards = () => {
         </div>
 
         <div className="procedures-grid">
+          {/* Mapeamos el arreglo de trámites para renderizar dinámicamente cada tarjeta */}
           {procedures.map((proc) => (
             <div key={proc.id} className="procedure-card">
+              {/* Contenedor del icono: utiliza una clase dinámica para aplicar el color específico */}
               <div className={`card-icon-wrapper color-${proc.color}`}>
                 <span className="card-icon">{proc.icon}</span>
               </div>

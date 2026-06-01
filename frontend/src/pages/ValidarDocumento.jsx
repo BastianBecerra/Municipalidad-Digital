@@ -6,35 +6,33 @@ import Footer from '../components/Footer';
 import './ValidarDocumento.css';
 
 const ValidarDocumento = () => {
-  const { hash: urlHash } = useParams();
+  const { hash: urlHash } = useParams(); // Obtenemos el hash desde la URL si existe
   const navigate = useNavigate();
 
-  const [scanning, setScanning] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [cameras, setCameras] = useState([]);
-  const [activeCameraId, setActiveCameraId] = useState('');
-  const [cameraPermission, setCameraPermission] = useState('prompt'); // prompt, granted, denied
+  // Estados de control para la UI
+  const [scanning, setScanning] = useState(false); // ¿Está la cámara activa?
+  const [loading, setLoading] = useState(false);   // ¿Estamos consultando la API/Blockchain?
+  const [result, setResult] = useState(null);      // Almacena la respuesta del validador
+  const [error, setError] = useState(null);        // Manejo de errores
+  const [cameras, setCameras] = useState([]);      // Lista de cámaras disponibles
+  const [activeCameraId, setActiveCameraId] = useState(''); // Cámara activa actual
+  
+  const html5QrCodeRef = useRef(null); // Referencia persistente para la instancia del escáner
 
-  const qrReaderRef = useRef(null);
-  const html5QrCodeRef = useRef(null);
-
-  // Si viene un hash en la URL, validar directamente
+  // EFECTO: Si el usuario entra directamente con un hash en la URL, validar sin escanear
   useEffect(() => {
-    const sha256Regex = /^[a-fA-F0-9]{64}$/;
+    const sha256Regex = /^[a-fA-F0-9]{64}$/; // Validación de formato de hash (64 caracteres hexadecimales)
     if (urlHash && sha256Regex.test(urlHash)) {
       performValidation(urlHash);
     }
   }, [urlHash]);
 
-  // Manejar el ciclo de vida del lector de QR
+  // EFECTO: Limpiar escáner al desmontar el componente (seguridad)
   useEffect(() => {
-    return () => {
-      stopScanning();
-    };
+    return () => { stopScanning(); };
   }, []);
 
+  // Lógica principal de consulta al Backend/Blockchain
   const performValidation = async (hashToValidate) => {
     setLoading(true);
     setError(null);
@@ -42,6 +40,7 @@ const ValidarDocumento = () => {
     stopScanning();
 
     try {
+      // Llamada al endpoint de validación
       const response = await fetch(`/api/validacion/public/validar/${hashToValidate}`);
       const data = await response.json();
       setResult(data);
@@ -52,18 +51,18 @@ const ValidarDocumento = () => {
     }
   };
 
+  // Inicialización de la cámara
   const startScanning = async () => {
     setResult(null);
     setError(null);
     setScanning(true);
 
     try {
-      // Solicitar permisos de cámara y obtener lista de dispositivos
       const devices = await Html5Qrcode.getCameras();
       setCameras(devices);
-      setCameraPermission('granted');
 
       if (devices.length > 0) {
+        // Preferir cámara trasera si está disponible
         const defaultCam = devices.find(device => device.label.toLowerCase().includes('back')) || devices[0];
         setActiveCameraId(defaultCam.id);
         initCamera(defaultCam.id);
@@ -72,337 +71,150 @@ const ValidarDocumento = () => {
         setScanning(false);
       }
     } catch (err) {
-      console.error("Error al iniciar cámara: ", err);
-      setCameraPermission('denied');
-      setError('No se pudo acceder a la cámara. Por favor otorga permisos o sube una imagen.');
+      setError('No se pudo acceder a la cámara. Por favor otorga permisos.');
       setScanning(false);
     }
   };
 
   const initCamera = (cameraId) => {
     if (html5QrCodeRef.current) {
-      html5QrCodeRef.current.stop().then(() => {
-        startQrInstance(cameraId);
-      }).catch(err => {
-        console.error("Error al detener cámara previa: ", err);
-        startQrInstance(cameraId);
-      });
+      html5QrCodeRef.current.stop().then(() => startQrInstance(cameraId));
     } else {
       startQrInstance(cameraId);
     }
   };
 
+  // Configuración de la librería de escaneo QR
   const startQrInstance = (cameraId) => {
     const html5QrCode = new Html5Qrcode("qr-reader-view");
     html5QrCodeRef.current = html5QrCode;
 
     html5QrCode.start(
       cameraId,
-      {
-        fps: 15,
-        qrbox: (width, height) => {
-          const size = Math.min(width, height) * 0.7;
-          return { width: size, height: size };
-        }
-      },
+      { fps: 15, qrbox: { width: 250, height: 250 } },
       (qrCodeMessage) => {
-        // Encontrar hash SHA-256 de 64 caracteres en el mensaje escaneado
-        let hash = qrCodeMessage;
-        if (qrCodeMessage.includes('/validar/')) {
-          hash = qrCodeMessage.substring(qrCodeMessage.lastIndexOf('/') + 1);
-        }
-
-        // Limpiar el hash de caracteres no deseados
+        // Extraer el hash del mensaje del QR
+        let hash = qrCodeMessage.includes('/validar/') ? qrCodeMessage.substring(qrCodeMessage.lastIndexOf('/') + 1) : qrCodeMessage;
         hash = hash.trim().toLowerCase();
-
-        // Validar formato SHA-256
-        const sha256Regex = /^[a-fA-F0-9]{64}$/;
-        if (sha256Regex.test(hash)) {
+        
+        // Si el QR es válido (SHA-256), navegamos a la ruta para validar
+        if (/^[a-fA-F0-9]{64}$/.test(hash)) {
           navigate(`/validar/${hash}`);
         } else {
-          setError('El código QR escaneado no contiene un formato de validación válido municipal.');
+          setError('El código QR no contiene un formato de validación válido.');
           stopScanning();
         }
       },
-      (errorMessage) => {
-        // Ignorar errores repetitivos de escaneo para mantener rendimiento
-      }
-    ).catch((err) => {
-      setError('Error al iniciar el flujo de video de la cámara.');
-      setScanning(false);
-    });
+      () => { /* Ignorar errores de lectura continua */ }
+    );
   };
 
   const stopScanning = () => {
     if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
-      html5QrCodeRef.current.stop().then(() => {
-        setScanning(false);
-      }).catch(err => {
-        console.error("Error al detener scanner: ", err);
-        setScanning(false);
-      });
+      html5QrCodeRef.current.stop().then(() => setScanning(false));
     } else {
       setScanning(false);
     }
   };
 
-  const handleCameraChange = (e) => {
-    const newId = e.target.value;
-    setActiveCameraId(newId);
-    initCamera(newId);
-  };
-
-  // Cargar una foto del QR si no se posee cámara
+  // Alternativa: Subir archivo de imagen para decodificar QR
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setLoading(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const html5QrCode = new Html5Qrcode("qr-reader-view-hidden");
-      html5QrCode.scanFile(file, true)
-        .then((qrCodeMessage) => {
-          let hash = qrCodeMessage;
-          if (qrCodeMessage.includes('/validar/')) {
-            hash = qrCodeMessage.substring(qrCodeMessage.lastIndexOf('/') + 1);
-          }
-          hash = hash.trim().toLowerCase();
-          const sha256Regex = /^[a-fA-F0-9]{64}$/;
-          if (sha256Regex.test(hash)) {
-            navigate(`/validar/${hash}`);
-          } else {
-            setError('La imagen cargada no contiene un hash de documento municipal válido.');
-            setLoading(false);
-          }
-        })
-        .catch((err) => {
-          setError('No se pudo decodificar un código QR en esta imagen. Asegúrate de que la iluminación sea buena.');
+    const html5QrCode = new Html5Qrcode("qr-reader-view-hidden");
+    html5QrCode.scanFile(file, true)
+      .then((qrCodeMessage) => {
+        let hash = qrCodeMessage.substring(qrCodeMessage.lastIndexOf('/') + 1).trim().toLowerCase();
+        if (/^[a-fA-F0-9]{64}$/.test(hash)) {
+          navigate(`/validar/${hash}`);
+        } else {
+          setError('La imagen no contiene un código QR municipal válido.');
           setLoading(false);
-        });
-    } catch (err) {
-      console.error("Error initializing file scanner:", err);
-      setError('Error al inicializar el escáner de imágenes. Intenta con la cámara o recarga la página.');
-      setLoading(false);
-    }
+        }
+      })
+      .catch(() => { setError('No se pudo decodificar la imagen.'); setLoading(false); });
   };
 
-  const resetAll = () => {
-    setResult(null);
-    setError(null);
-    setScanning(false);
-    navigate('/validar');
-  };
+  const resetAll = () => { navigate('/validar'); setResult(null); setError(null); };
 
   return (
     <div className="validar-page">
       <Navbar />
       <main className="container validar-container animate-fade-in">
         
-        {/* Cabecera Principal */}
         <div className="validar-header text-center">
           <div className="badge-digital">Sello Digital Municipal</div>
           <h1>Validador Oficial de Documentos</h1>
-          <p className="subtitle">
-            Escanea el código QR de un certificado municipal impreso o carga una imagen para verificar su integridad y registro en la red Blockchain.
-          </p>
         </div>
 
-        {/* CONTENEDOR CENTRAL */}
         <div className="validar-body glass-card">
-          <div id="qr-reader-view-hidden" style={{ position: 'absolute', opacity: 0, width: '1px', height: '1px', pointerEvents: 'none', zIndex: -9999 }}></div>
+          {/* Contenedor oculto para la decodificación de archivos */}
+          <div id="qr-reader-view-hidden" style={{ display: 'none' }}></div>
           
-          {/* 1. MODO DE CARGA/ESPERA (SPINNER) */}
+          {/* ESTADO 1: Cargando */}
           {loading && (
             <div className="validation-loader">
               <div className="spinner"></div>
               <h3>Consultando en Blockchain...</h3>
-              <p>Analizando firma digital y registros criptográficos del documento en tiempo real.</p>
             </div>
           )}
 
-          {/* 2. ERROR GENERAL */}
+          {/* ESTADO 2: Error */}
           {!loading && error && (
-            <div className="validation-alert alert-danger animate-slide-up">
-              <span className="icon">⚠️</span>
-              <div>
-                <h4>Error de Verificación</h4>
-                <p>{error}</p>
-                <button className="btn btn-outline" onClick={resetAll}>Volver a intentar</button>
-              </div>
+            <div className="validation-alert alert-danger">
+              <p>{error}</p>
+              <button onClick={resetAll}>Volver a intentar</button>
             </div>
           )}
 
-          {/* 3. MODO ESCÁNER ACTIVO */}
+          {/* ESTADO 3: Cámara Activa */}
           {!loading && !error && scanning && (
-            <div className="scanner-section animate-fade-in">
-              <div className="scanner-container">
-                <div id="qr-reader-view"></div>
-                <div className="scanner-overlay">
-                  <div className="scanner-laser"></div>
-                  <div className="scanner-corners"></div>
-                </div>
-              </div>
-
-              <div className="scanner-controls">
-                {cameras.length > 1 && (
-                  <div className="camera-selector">
-                    <label htmlFor="cam-select">Cambiar Cámara:</label>
-                    <select id="cam-select" value={activeCameraId} onChange={handleCameraChange}>
-                      {cameras.map(cam => (
-                        <option key={cam.id} value={cam.id}>{cam.label || `Cámara ${cameras.indexOf(cam) + 1}`}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                <button className="btn btn-danger" onClick={stopScanning}>
-                  🛑 Cancelar Escaneo
-                </button>
-              </div>
+            <div className="scanner-section">
+              <div id="qr-reader-view"></div>
+              <button onClick={stopScanning}>🛑 Cancelar</button>
             </div>
           )}
 
-          {/* 4. MENÚ DE INICIO (SIN ACCIÓN) */}
+          {/* ESTADO 4: Menú inicial (cámara o archivo) */}
           {!loading && !error && !scanning && !result && (
-            <div className="init-menu text-center animate-fade-in">
-              <div className="shield-animation">
-                <div className="shield-glow"></div>
-                <span className="shield-icon">🛡️</span>
-              </div>
+            <div className="init-menu text-center">
               <h3>Selecciona el método de validación</h3>
-              <p>Elige usar la cámara de tu dispositivo o cargar una fotografía del código QR del certificado.</p>
-              
               <div className="menu-actions">
-                <button className="btn btn-primary btn-lg" onClick={startScanning}>
-                  📷 Escanear con Cámara
-                </button>
-                <label className="btn btn-secondary btn-lg btn-upload">
-                  📁 Cargar Archivo/Foto QR
+                <button onClick={startScanning}>📷 Escanear con Cámara</button>
+                <label>
+                  📁 Cargar Archivo
                   <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
                 </label>
-            </div>
+              </div>
             </div>
           )}
 
-          {/* 5. VISTA DE RESULTADO DE VALIDACIÓN */}
+          {/* ESTADO 5: Resultado (Si es válido o inválido) */}
           {!loading && !error && result && (
-            <div className={`result-section animate-slide-up ${result.valido ? 'result-valid' : 'result-invalid'}`}>
+            <div className={`result-section ${result.valido ? 'result-valid' : 'result-invalid'}`}>
+              <h3>{result.valido ? 'Documento Auténtico' : 'Documento No Válido'}</h3>
               
-              {/* Encabezado del Resultado */}
-              <div className="result-header">
-                <div className="result-badge">
-                  <span className="badge-icon">{result.valido ? '✓' : '✗'}</span>
-                  <h3>{result.valido ? 'Documento Auténtico' : 'Documento No Válido'}</h3>
+              {/* Despliegue de datos del documento */}
+              {result.documento && (
+                <div className="result-card">
+                  <h4>📋 Datos del Documento</h4>
+                  <p>Título: {result.documento.titulo}</p>
                 </div>
-                <p className="result-motivo">{result.motivo}</p>
-              </div>
+              )}
 
-              {/* Contenido en Rejilla */}
-              <div className="result-grid">
-                
-                {/* Metadatos Municipales */}
-                {result.documento && (
-                  <div className="result-card data-card glass">
-                    <h4>📋 Datos del Documento</h4>
-                    <hr />
-                    <div className="data-row">
-                      <span className="label">Título:</span>
-                      <span className="value bold">{result.documento.titulo}</span>
-                    </div>
-                    <div className="data-row">
-                      <span className="label">Tipo:</span>
-                      <span className="value font-accent">
-                        {result.documento.usuarioComuna ? 'Certificado de Residencia' : 'Documento Municipal'}
-                      </span>
-                    </div>
-                    {result.documento.usuarioNombreCompleto && (
-                      <div className="data-row">
-                        <span className="label">Titular:</span>
-                        <span className="value uppercase">{result.documento.usuarioNombreCompleto}</span>
-                      </div>
-                    )}
-                    {result.documento.usuarioRut && (
-                      <div className="data-row">
-                        <span className="label">RUT Titular:</span>
-                        <span className="value">{result.documento.usuarioRut}</span>
-                      </div>
-                    )}
-                    {result.documento.usuarioDireccion && (
-                      <div className="data-row">
-                        <span className="label">Domicilio:</span>
-                        <span className="value">{result.documento.usuarioDireccion}, {result.documento.usuarioComuna}</span>
-                      </div>
-                    )}
-                    <div className="data-row">
-                      <span className="label">Firma Digital:</span>
-                      <span className="value code-text">{result.documento.firmaDigital?.substring(0, 24)}...</span>
-                    </div>
-                    <div className="data-row">
-                      <span className="label">Firmado Por:</span>
-                      <span className="value">{result.documento.firmadoPor}</span>
-                    </div>
-                  </div>
-                )}
+              {/* Despliegue de Blockchain */}
+              {result.blockchain && (
+                <div className="result-card">
+                  <h4>⛓️ Registro Criptográfico</h4>
+                  <p>Hash: {result.blockchain.hash.substring(0, 20)}...</p>
+                </div>
+              )}
 
-                {/* Sello Blockchain */}
-                {result.blockchain && (
-                  <div className="result-card blockchain-card glass">
-                    <h4>⛓️ Registro Criptográfico (Blockchain)</h4>
-                    <hr />
-                    <div className="blockchain-badge-seal">
-                      <div className="chain-pulse"></div>
-                      <span>SELLADO EN RED ETHEREUM</span>
-                    </div>
-                    
-                    <div className="data-row">
-                      <span className="label">Hash Documento:</span>
-                      <span className="value code-text font-small-code" title={result.blockchain.hash}>
-                        {result.blockchain.hash}
-                      </span>
-                    </div>
-                    
-                    {result.blockchain.timestamp && (
-                      <div className="data-row">
-                        <span className="label">Bloque Sellado:</span>
-                        <span className="value">
-                          {new Date(Number(result.blockchain.timestamp) * 1000).toLocaleString()}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {result.blockchain.registeredBy && (
-                      <div className="data-row">
-                        <span className="label">Autoridad Registradora:</span>
-                        <span className="value code-text font-small-code" title={result.blockchain.registeredBy}>
-                          {result.blockchain.registeredBy}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {result.documento?.blockchainTxHash && (
-                      <div className="data-row">
-                        <span className="label">TX Hash:</span>
-                        <span className="value code-text font-small-code" title={result.documento.blockchainTxHash}>
-                          {result.documento.blockchainTxHash}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Botón para reiniciar */}
-              <div className="result-actions text-center">
-                <button className="btn btn-primary btn-lg" onClick={resetAll}>
-                  🔄 Validar Otro Documento
-                </button>
-              </div>
-
+              <button onClick={resetAll}>🔄 Validar Otro</button>
             </div>
           )}
-
         </div>
       </main>
       <Footer />

@@ -1,10 +1,17 @@
+/* ==========================================
+   PÁGINA DE LOGIN - ESTILOS
+   Estructura: Cabecera, Formulario, Botones y Efectos visuales
+   ========================================== */
+
 .login-page {
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--text-color);
+  position: relative;
+  overflow: hidden; /* Asegura que los elementos decorativos no generen scroll */
 }
 
-/* ClaveÚnica Header */
+/* --- Cabecera estilo ClaveÚnica --- */
 .clave-unica-header {
   width: 100%;
   box-shadow: var(--shadow-sm);
@@ -35,7 +42,7 @@
   padding-left: 1.5rem;
 }
 
-/* Login Card */
+/* --- Contenedor y Tarjeta de Login --- */
 .login-container {
   display: flex;
   flex-direction: column;
@@ -69,6 +76,7 @@
   margin-bottom: 1.5rem;
 }
 
+/* --- Feedback de Error --- */
 .login-error {
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.3);
@@ -81,17 +89,7 @@
   animation: fadeIn 0.3s ease;
 }
 
-.cu-btn-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* --- Formulario e Inputs --- */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -121,15 +119,14 @@
   outline: none;
 }
 
-.cu-input::placeholder {
-  color: var(--text-muted);
-}
+.cu-input::placeholder { color: var(--text-muted); }
 
 .cu-input:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
 }
 
+/* --- Botón de envío --- */
 .cu-btn-submit {
   background-color: var(--primary-color);
   color: white;
@@ -144,12 +141,19 @@
   box-shadow: var(--shadow-md);
 }
 
+.cu-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .cu-btn-submit:hover {
   background-color: var(--primary-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
 
+/* --- Footer del Login --- */
 .login-footer {
   margin-top: 2rem;
   display: flex;
@@ -167,15 +171,10 @@
   font-weight: 500;
 }
 
-.cu-link:hover {
-  text-decoration: underline;
-  color: var(--primary-hover);
-}
+.cu-link:hover { text-decoration: underline; color: var(--primary-hover); }
 
-/* Back Button */
-.login-back-wrapper {
-  margin-top: 2rem;
-}
+/* --- Botón de retroceso --- */
+.login-back-wrapper { margin-top: 2rem; }
 
 .btn-back {
   background: none;
@@ -186,16 +185,9 @@
   transition: color 0.2s;
 }
 
-.btn-back:hover {
-  color: var(--text-color);
-}
+.btn-back:hover { color: var(--text-color); }
 
-/* Floating Shapes (Auras) */
-.login-page {
-  position: relative;
-  overflow: hidden;
-}
-
+/* --- Auras decorativas (Floating Shapes) --- */
 .floating-shape {
   position: absolute;
   border-radius: 50%;
@@ -206,38 +198,27 @@
 }
 
 .shape-1 {
-  width: 250px;
-  height: 250px;
+  width: 250px; height: 250px;
   background: rgba(59, 130, 246, 0.3);
-  /* Blue */
-  top: 80%;
-  right: 40%;
+  top: 80%; right: 40%;
 }
 
 .shape-2 {
-  width: 300px;
-  height: 300px;
+  width: 300px; height: 300px;
   background: rgba(16, 185, 129, 0.3);
-  /* Green */
-  bottom: 5%;
-  left: -5%;
+  bottom: 5%; left: -5%;
   animation-delay: -5s;
 }
 
+/* --- Animaciones Keyframes --- */
 @keyframes float {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
 
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }

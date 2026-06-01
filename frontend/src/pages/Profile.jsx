@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 
+// Componente: Muestra la información del usuario autenticado
 const Profile = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [user, setUser] = useState(null); // Almacena los datos del usuario
+  const [loading, setLoading] = useState(true); // Estado de carga para mostrar el spinner
+  const [error, setError] = useState(''); // Estado para mensajes de error
   const navigate = useNavigate();
 
+  // Efecto: Ejecuta al montar el componente para obtener los datos del usuario
   useEffect(() => {
     const token = localStorage.getItem('token');
+    
+    // Si no hay token, redirigimos al login inmediatamente (Protección de ruta)
     if (!token) {
       navigate('/login');
       return;
@@ -17,13 +21,15 @@ const Profile = () => {
 
     const fetchProfile = async () => {
       try {
+        // Solicitud al endpoint protegido de usuario
         const response = await fetch('/usuarios/me', {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`, // Envío del JWT para autenticación
             'Content-Type': 'application/json',
           },
         });
 
+        // Manejo de errores de sesión (Token expirado o inválido)
         if (response.status === 401 || response.status === 403) {
           localStorage.removeItem('token');
           navigate('/login');
@@ -39,18 +45,22 @@ const Profile = () => {
       } catch (err) {
         setError('No se pudo cargar tu perfil. Intenta iniciar sesión nuevamente.');
       } finally {
-        setLoading(false);
+        setLoading(false); // Terminamos el estado de carga
       }
     };
 
     fetchProfile();
   }, [navigate]);
 
+  // Manejador para cerrar sesión
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/');
   };
 
+  // --- RENDERIZADO CONDICIONAL ---
+
+  // Estado de carga
   if (loading) {
     return (
       <div className="profile-page gradient-bg">
@@ -62,12 +72,11 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        <div className="floating-shape shape-1"></div>
-        <div className="floating-shape shape-2"></div>
       </div>
     );
   }
 
+  // Estado de error
   if (error) {
     return (
       <div className="profile-page gradient-bg">
@@ -79,16 +88,16 @@ const Profile = () => {
             </button>
           </div>
         </div>
-        <div className="floating-shape shape-1"></div>
-        <div className="floating-shape shape-2"></div>
       </div>
     );
   }
 
+  // Vista de perfil completa
   return (
     <div className="profile-page gradient-bg">
       <div className="profile-container">
         <div className="profile-card">
+          {/* Cabecera: Avatar y Nombre */}
           <div className="profile-header">
             <div className="avatar">
               {user.nombres?.charAt(0)}{user.apellidoPaterno?.charAt(0)}
@@ -97,6 +106,7 @@ const Profile = () => {
             <span className="profile-role">{user.rol}</span>
           </div>
 
+          {/* Secciones de información detallada */}
           <div className="profile-info">
             <div className="info-section">
               <h3 className="section-title">Datos Personales</h3>
@@ -141,13 +151,10 @@ const Profile = () => {
                   <span className="info-label">Comuna</span>
                   <span className="info-value">{user.comuna || '—'}</span>
                 </div>
-                <div className="info-item">
-                  <span className="info-label">Región</span>
-                  <span className="info-value">{user.region || '—'}</span>
-                </div>
               </div>
             </div>
 
+            {/* Renderizado condicional si el usuario pertenece a un territorio (Junta de vecinos) */}
             {user.territorio && (
               <div className="info-section">
                 <h3 className="section-title">Junta de Vecinos</h3>
@@ -161,6 +168,7 @@ const Profile = () => {
             )}
           </div>
 
+          {/* Acciones del perfil */}
           <div className="profile-actions">
             <button onClick={handleLogout} className="btn-logout">
               Cerrar Sesión
@@ -174,9 +182,6 @@ const Profile = () => {
           </button>
         </div>
       </div>
-
-      <div className="floating-shape shape-1"></div>
-      <div className="floating-shape shape-2"></div>
     </div>
   );
 };

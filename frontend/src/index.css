@@ -1,39 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Colors - Light Theme Default */
-  --bg-color: #f3f4f6;
-  /* Light gray background */
-  --text-color: #1f2937;
-  /* Dark gray text for high contrast */
-  --text-muted: #4b5563;
-  /* Medium gray for secondary text */
-  --primary-color: #2563eb;
-  /* Primary blue */
-  --primary-hover: #1d4ed8;
-  /* Darker blue for hover */
-  --secondary-color: #059669;
-  /* Green for success/verification */
-  --card-bg: #ffffff;
-  /* Solid white for cards to contrast with gray background */
-  --border-color: #e5e7eb;
-  /* Light border */
+  /* Colores - Tema Oscuro (Defecto) */
+  --bg-color: #0f172a; /* Fondo oscuro */
+  --text-color: #f8fafc; /* Texto claro para alto contraste */
+  --text-muted: #94a3b8; /* Gris medio para texto secundario */
+  --primary-color: #60a5fa; /* Azul primario */
+  --primary-hover: #3b82f6; /* Azul más oscuro para estado hover */
+  --secondary-color: #34d399; /* Verde para éxito/verificación */
+  --card-bg: rgba(30, 41, 59, 0.8); /* Fondo de tarjeta semitransparente */
+  --border-color: rgba(255, 255, 255, 0.1); /* Borde sutil */
 
-  /* Solid Shadows instead of glass */
+  /* Sombras sólidas en lugar de efecto vidrio (glass) */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
-  /* Legacy Glassmorphism fallbacks mapped to solid colors to prevent breaking existing classes before cleanup */
-  --glass-bg: #ffffff;
-  --glass-border: 1px solid #e5e7eb;
-  --glass-shadow: var(--shadow-md);
+  /* Alternativas (fallbacks) de Glassmorphism mapeados a colores sólidos */
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 
-  /* Accessibility Scaling */
+  /* Escalado para accesibilidad */
   --font-scale: 1;
 }
 
-/* Accessibility Global Modifiers */
+/* Modificadores globales de accesibilidad */
 body.text-large {
   --font-scale: 1.15;
 }
@@ -92,13 +84,17 @@ button {
   font-size: inherit;
 }
 
+html {
+  scroll-behavior: smooth; /* Desplazamiento suave para navegación */
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
-/* Utilities */
+/* Utilidades */
 .text-center {
   text-align: center;
 }
@@ -107,32 +103,14 @@ button {
   color: var(--primary-color);
 }
 
-.mt-2 {
-  margin-top: 0.5rem;
-}
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-8 { margin-top: 2rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-8 { margin-bottom: 2rem; }
+.py-16 { padding-top: 4rem; padding-bottom: 4rem; }
 
-.mt-4 {
-  margin-top: 1rem;
-}
-
-.mt-8 {
-  margin-top: 2rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mb-8 {
-  margin-bottom: 2rem;
-}
-
-.py-16 {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
-}
-
-/* Global Card Style */
+/* Estilo global de tarjetas */
 .glass-card,
 .glass {
   background-color: var(--card-bg);
@@ -141,7 +119,7 @@ button {
   box-shadow: var(--shadow-md);
 }
 
-/* Buttons */
+/* Botones */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -175,13 +153,13 @@ button {
   transform: translateY(-2px);
 }
 
-/* Gradient Backgrounds overrides (removed gradients for clarity) */
+/* Sobrescritura de fondos con gradiente (eliminados para claridad) */
 .gradient-bg {
   position: relative;
   background-color: var(--bg-color);
 }
 
-/* Hide floating shapes globally to reduce visual noise */
+/* Ocultar formas flotantes globalmente para reducir ruido visual */
 .floating-shape {
   display: none !important;
 }

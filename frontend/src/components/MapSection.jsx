@@ -4,7 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './MapSection.css';
 
-// Fix for default marker icons in react-leaflet
+// Corrección para los iconos de marcador por defecto de Leaflet
+// React-Leaflet a veces pierde la ruta de las imágenes, con esto lo forzamos.
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -12,7 +13,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Mock data
+// Datos de prueba: Simulamos información de notarías por comuna
 const comunasData = [
   {
     id: 'santiago',
@@ -44,21 +45,24 @@ const comunasData = [
   }
 ];
 
+// Componente helper para forzar el re-centrado del mapa al cambiar de comuna
 const MapRecenter = ({ coords }) => {
   const map = useMap();
   useEffect(() => {
-    map.setView(coords, 14);
+    map.setView(coords, 14); // Actualiza la vista con nuevas coordenadas
   }, [coords, map]);
   return null;
 };
 
 const MapSection = () => {
+  // Estado para manejar la comuna seleccionada actualmente
   const [selectedComunaId, setSelectedComunaId] = useState(comunasData[0].id);
 
+  // Buscamos los datos de la comuna seleccionada en el array
   const selectedComuna = comunasData.find(c => c.id === selectedComunaId);
 
   return (
-    <section className="map-section">
+    <section className="map-section" id='encuentra-notarias'>
       <div className="container">
         <div className="map-header text-center">
           <h2>Encuentra Notarías cerca de ti</h2>
@@ -66,6 +70,7 @@ const MapSection = () => {
         </div>
 
         <div className="map-container-glass">
+          {/* Selector de comuna */}
           <div className="comuna-selector-wrapper">
             <label htmlFor="comuna-select" className="comuna-label">Comuna:</label>
             <select
@@ -82,6 +87,7 @@ const MapSection = () => {
             </select>
           </div>
 
+          {/* Contenedor del mapa */}
           <div className="map-wrapper">
             <MapContainer
               center={selectedComuna.coords}
@@ -91,10 +97,12 @@ const MapSection = () => {
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                url="https://{s.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
+              {/* Componente para centrar el mapa dinámicamente */}
               <MapRecenter coords={selectedComuna.coords} />
 
+              {/* Mapeo de marcadores según la comuna seleccionada */}
               {selectedComuna.notarias.map((notaria) => (
                 <Marker key={notaria.id} position={notaria.coords}>
                   <Popup>
