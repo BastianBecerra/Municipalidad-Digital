@@ -161,8 +161,8 @@ const GenerarDocumento = () => {
           {/* Formulario de solicitud */}
           <form className="generar-form" onSubmit={handleSubmit} noValidate>
             <div className="form-group">
-              <label>Tipo de Trámite</label>
-              <select value={tipoTramite} onChange={(e) => setTipoTramite(e.target.value)} className="cu-input">
+              <label htmlFor="tipoTramite">Tipo de Trámite</label>
+              <select id="tipoTramite" value={tipoTramite} onChange={(e) => setTipoTramite(e.target.value)} className="cu-input">
                 <option value="residencia">Certificado de Residencia</option>
                 <option value="salvoconducto">Salvoconducto</option>
               </select>
@@ -171,18 +171,37 @@ const GenerarDocumento = () => {
             {/* Campos del formulario */}
             <div className="form-row">
               <div className="form-group">
-                <label>RUT del Vecino</label>
-                <input type="text" name="rut" value={formData.rut} onChange={handleChange} onBlur={handleBlur} placeholder="12.345.678-9" className={inputClass('rut')} />
+                <label htmlFor="rut">RUT del Vecino</label>
+                <input type="text" id="rut" name="rut" value={formData.rut} onChange={handleChange} onBlur={handleBlur} placeholder="12.345.678-9" className={inputClass('rut')} />
                 {touched.rut && fieldErrors.rut && <span className="field-error">{fieldErrors.rut}</span>}
               </div>
               <div className="form-group">
-                <label>Nombre Completo</label>
-                <input type="text" name="nombreCompleto" value={formData.nombreCompleto} onChange={handleChange} onBlur={handleBlur} className={inputClass('nombreCompleto')} />
+                <label htmlFor="nombreCompleto">Nombre Completo</label>
+                <input type="text" id="nombreCompleto" name="nombreCompleto" value={formData.nombreCompleto} onChange={handleChange} onBlur={handleBlur} className={inputClass('nombreCompleto')} />
                 {touched.nombreCompleto && fieldErrors.nombreCompleto && <span className="field-error">{fieldErrors.nombreCompleto}</span>}
               </div>
             </div>
 
-            {/* Resto del formulario... */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="direccion">Dirección</label>
+                <input type="text" id="direccion" name="direccion" value={formData.direccion} onChange={handleChange} onBlur={handleBlur} className={inputClass('direccion')} />
+                {touched.direccion && fieldErrors.direccion && <span className="field-error">{fieldErrors.direccion}</span>}
+              </div>
+              {tipoTramite === 'residencia' && (
+                <div className="form-group">
+                  <label htmlFor="comuna">Comuna</label>
+                  <input type="text" id="comuna" name="comuna" value={formData.comuna} onChange={handleChange} onBlur={handleBlur} className={inputClass('comuna')} />
+                  {touched.comuna && fieldErrors.comuna && <span className="field-error">{fieldErrors.comuna}</span>}
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="motivo">Motivo del Trámite</label>
+              <textarea id="motivo" name="motivo" value={formData.motivo} onChange={handleChange} onBlur={handleBlur} className={inputClass('motivo')} rows="4" placeholder="Describa el motivo por el cual solicita este documento..." />
+              {touched.motivo && fieldErrors.motivo && <span className="field-error">{fieldErrors.motivo}</span>}
+            </div>
             {/* Botón de envío */}
             <button type="submit" className="btn btn-primary btn-submit" disabled={loading}>
               {loading ? 'Enviando...' : 'Solicitar Documento'}
