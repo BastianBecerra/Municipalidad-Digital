@@ -10,4 +10,8 @@ class UsuariosApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void testMain() {
+		UsuariosApplication.main(new String[]{"--server.port=0"});
+	}
 }
