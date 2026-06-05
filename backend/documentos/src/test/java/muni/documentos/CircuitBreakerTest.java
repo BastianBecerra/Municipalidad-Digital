@@ -60,4 +60,35 @@ class CircuitBreakerTest {
         // Verificar que RestTemplate sólo fue invocado 5 veces, confirmando el corto circuito en la sexta llamada
         Mockito.verify(restTemplate, Mockito.times(5)).postForObject(any(String.class), any(), eq(Map.class));
     }
+
+    @Test
+    void testNotificacionCircuitBreakerTransitionsToOpen() {
+        // 1. Obtener la instancia del disyuntor
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("notificacionCB");
+        
+        // Resetear el estado del disyuntor antes del test
+        circuitBreaker.reset();
+        assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.CLOSED);
+
+        // 2. Configurar el mock de RestTemplate para simular una falla de red (Connection refused)
+        Mockito.when(restTemplate.postForObject(any(String.class), any(), eq(String.class)))
+                .thenThrow(new org.springframework.web.client.ResourceAccessException("Connection refused"));
+
+        // 3. Realizar 5 llamadas consecutivas (tamaño de la ventana deslizante)
+        Map<String, String> request = Map.of("documentId", "DOC-100", "email", "test@muni.cl");
+        for (int i = 0; i < 5; i++) {
+            // Debería ejecutar el fallback de forma silenciosa sin arrojar excepciones
+            integrationClient.notificarAprobacion(request);
+        }
+
+        // 4. Verificar que el disyuntor cambió su estado a OPEN (Abierto)
+        assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.OPEN);
+
+        // 5. Realizar una sexta llamada y verificar que se ejecuta el fallback de inmediato
+        // sin llamar a RestTemplate (el disyuntor la cortocircuita)
+        integrationClient.notificarAprobacion(request);
+        
+        // Verificar que RestTemplate sólo fue invocado 5 veces, confirmando el corto circuito en la sexta llamada
+        Mockito.verify(restTemplate, Mockito.times(5)).postForObject(any(String.class), any(), eq(String.class));
+    }
 }
