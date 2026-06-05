@@ -10,4 +10,9 @@ class DocumentosApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void testMain() {
+		DocumentosApplication.main(new String[]{"--server.port=0"});
+	}
+
 }

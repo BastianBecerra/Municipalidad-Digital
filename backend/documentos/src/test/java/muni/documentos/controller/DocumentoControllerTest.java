@@ -235,4 +235,95 @@ class DocumentoControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("No encontrado"));
     }
+
+    @Test
+    @WithMockUser(username = "11111111-1", roles = {"VECINO"})
+    void testCreateSalvoconducto_Vecino() throws Exception {
+        DocumentoSalvoconducto doc = new DocumentoSalvoconducto();
+        doc.setTitulo("Salvo Vecino");
+        doc.setDescripcion("Viaje urgente");
+
+        when(documentoService.createSalvoconductoDoc(any(), eq(true))).thenReturn(doc);
+
+        mockMvc.perform(post("/documentos/salvoconducto")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(doc)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo").value("Salvo Vecino"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testCreateSalvoconducto_Admin() throws Exception {
+        DocumentoSalvoconducto doc = new DocumentoSalvoconducto();
+        doc.setTitulo("Salvo Admin");
+
+        when(documentoService.createSalvoconductoDoc(any(), eq(true))).thenReturn(doc);
+
+        mockMvc.perform(post("/documentos/salvoconducto")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(doc)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo").value("Salvo Admin"));
+    }
+
+    @Test
+    @WithMockUser(username = "11111111-1", roles = {"VECINO"})
+    void testCreateResidencia_Vecino() throws Exception {
+        DocumentoResidencia doc = new DocumentoResidencia();
+        doc.setTitulo("Residencia Vecino");
+
+        when(documentoService.createResidenciaDoc(any(), eq(true))).thenReturn(doc);
+
+        mockMvc.perform(post("/documentos/residencia")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(doc)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo").value("Residencia Vecino"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testCreateResidencia_Admin() throws Exception {
+        DocumentoResidencia doc = new DocumentoResidencia();
+        doc.setTitulo("Residencia Admin");
+
+        when(documentoService.createResidenciaDoc(any(), eq(true))).thenReturn(doc);
+
+        mockMvc.perform(post("/documentos/residencia")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(doc)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo").value("Residencia Admin"));
+    }
+
+    @Test
+    @WithMockUser(username = "22222222-2", roles = {"VECINO"})
+    void testDownloadPdf_VecinoNotOwner_Forbidden() throws Exception {
+        DocumentoResidencia doc = new DocumentoResidencia();
+        doc.setId(1L);
+        doc.setUsuarioRut("11111111-1"); // different owner
+
+        when(documentoService.findById(1L)).thenReturn(doc);
+
+        mockMvc.perform(get("/documentos/1/pdf"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testCreateJuntaVecinalAlt() throws Exception {
+        DocumentoJuntaVecinal doc = new DocumentoJuntaVecinal();
+        doc.setTitulo("Acta Alt");
+        doc.setNombreJuntaVecinal("Junta B");
+
+        when(documentoService.createJuntaVecinalDoc(any(), eq(true))).thenReturn(doc);
+
+        mockMvc.perform(post("/documentos/junta-vecinal")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(doc)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo").value("Acta Alt"));
+    }
 }
+

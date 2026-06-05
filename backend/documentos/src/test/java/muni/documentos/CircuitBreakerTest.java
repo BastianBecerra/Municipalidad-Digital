@@ -91,4 +91,38 @@ class CircuitBreakerTest {
         // Verificar que RestTemplate sólo fue invocado 5 veces, confirmando el corto circuito en la sexta llamada
         Mockito.verify(restTemplate, Mockito.times(5)).postForObject(any(String.class), any(), eq(String.class));
     }
+
+    @Test
+    void testRegistrarEnBlockchain_HappyPath() {
+        // Reset the CB to CLOSED so the happy path is reachable
+        circuitBreakerRegistry.circuitBreaker("blockchainCB").reset();
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("status", "success");
+        response.put("transactionHash", "0xabc");
+
+        Mockito.doReturn(response).when(restTemplate)
+                .postForObject(any(String.class), any(), eq(Map.class));
+
+        Map<?, ?> result = integrationClient.registrarEnBlockchain("DOC-HAPPY", "hashHappy");
+        assertThat(result.get("status")).isEqualTo("success");
+    }
+
+    @Test
+    void testNotificarAprobacion_HappyPath() {
+        // Reset the CB to CLOSED so the happy path is reachable
+        circuitBreakerRegistry.circuitBreaker("notificacionCB").reset();
+
+        Mockito.when(restTemplate.postForObject(any(String.class), any(), eq(String.class)))
+                .thenReturn("OK");
+
+        Map<String, String> request = Map.of("documentId", "DOC-HAPPY", "email", "ok@muni.cl");
+        // Should not throw
+        integrationClient.notificarAprobacion(request);
+
+        Mockito.verify(restTemplate, Mockito.atLeastOnce())
+                .postForObject(any(String.class), any(), eq(String.class));
+    }
 }
+
