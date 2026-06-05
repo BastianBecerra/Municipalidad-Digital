@@ -10,4 +10,9 @@ class BlockchainApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void testMain() {
+		BlockchainApplication.main(new String[]{"--server.port=0"});
+	}
+
 }
