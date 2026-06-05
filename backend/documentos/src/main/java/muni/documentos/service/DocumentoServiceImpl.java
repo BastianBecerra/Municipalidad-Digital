@@ -1,6 +1,7 @@
 package muni.documentos.service;
 
 import lombok.RequiredArgsConstructor;
+import muni.documentos.integration.IntegrationClient;
 import muni.documentos.model.entity.*;
 import muni.documentos.model.dto.UsuarioDTO;
 import muni.documentos.model.dto.TerritorioDTO;
@@ -33,6 +34,8 @@ public class DocumentoServiceImpl implements DocumentoService {
     private final DocumentoResidenciaRepository residenciaRepository;
     private final RestTemplate restTemplate;
     private final PdfService pdfService;
+    private final IntegrationClient integrationClient;
+
 
     @Value("${muni.usuarios.url:http://app-usuarios:8086/usuarios}")
     private String usuariosApiUrl;
@@ -253,25 +256,16 @@ public class DocumentoServiceImpl implements DocumentoService {
             }
         }
 
-        // Realizar la llamada REST al microservicio de notificaciones
-        try {
-            java.util.Map<String, String> notifRequest = new java.util.HashMap<>();
-            notifRequest.put("email", emailDestinatario);
-            notifRequest.put("nombreCompleto", nombreDestinatario);
-            notifRequest.put("documentId", "DOC-" + savedDoc.getId());
-            notifRequest.put("tipoDocumento", tipoDoc);
-            notifRequest.put("titulo", savedDoc.getTitulo());
-            notifRequest.put("hashBlockchain", savedDoc.getBlockchainTxHash());
+        // Realizar la llamada REST al microservicio de notificaciones usando el IntegrationClient protegido con Circuit Breaker
+        java.util.Map<String, String> notifRequest = new java.util.HashMap<>();
+        notifRequest.put("email", emailDestinatario);
+        notifRequest.put("nombreCompleto", nombreDestinatario);
+        notifRequest.put("documentId", "DOC-" + savedDoc.getId());
+        notifRequest.put("tipoDocumento", tipoDoc);
+        notifRequest.put("titulo", savedDoc.getTitulo());
+        notifRequest.put("hashBlockchain", savedDoc.getBlockchainTxHash());
 
-            restTemplate.postForObject(
-                    notificacionApiUrl + "/documento-aprobado",
-                    notifRequest,
-                    String.class
-            );
-            System.out.println("✓ Solicitud de notificación de aprobación enviada con éxito para DOC-" + savedDoc.getId());
-        } catch (Exception e) {
-            System.err.println("⚠ Error al enviar notificación de aprobación a " + notificacionApiUrl + ": " + e.getMessage());
-        }
+        integrationClient.notificarAprobacion(notifRequest);
 
         return savedDoc;
     }
@@ -288,15 +282,7 @@ public class DocumentoServiceImpl implements DocumentoService {
         documentoRepository.saveAndFlush(doc);
 
         try {
-            java.util.Map<String, String> request = new java.util.HashMap<>();
-            request.put("documentId", "DOC-" + doc.getId());
-            request.put("content", doc.getHashSha256());
-
-            java.util.Map<?, ?> response = restTemplate.postForObject(
-                    blockchainApiUrl + "/registrar",
-                    request,
-                    java.util.Map.class
-            );
+            java.util.Map<?, ?> response = integrationClient.registrarEnBlockchain("DOC-" + doc.getId(), doc.getHashSha256());
 
             if (response != null && "success".equals(response.get("status"))) {
                 String txHash = (String) response.get("transactionHash");
@@ -305,12 +291,12 @@ public class DocumentoServiceImpl implements DocumentoService {
             } else {
                 doc.setEstadoBlockchain(EstadoBlockchain.ERROR);
                 String msg = response != null ? (String) response.get("message") : "Respuesta vacía";
-                throw new RuntimeException("Error en respuesta de blockchain: " + msg);
+                throw new RuntimeException("Error o Fallback activado en respuesta de blockchain: " + msg);
             }
         } catch (Exception e) {
             doc.setEstadoBlockchain(EstadoBlockchain.ERROR);
             documentoRepository.save(doc);
-            throw new RuntimeException("Error al sincronizar con blockchain: " + e.getMessage(), e);
+            throw new RuntimeException("Error al sincronizar con blockchain (Circuit Breaker activo/Falla): " + e.getMessage(), e);
         }
 
         documentoRepository.save(doc);
