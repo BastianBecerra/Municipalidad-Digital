@@ -10,4 +10,8 @@ class ValidacionApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void testMain() {
+		ValidacionApplication.main(new String[]{"--server.port=0"});
+	}
 }

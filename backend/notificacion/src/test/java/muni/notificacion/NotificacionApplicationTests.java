@@ -10,4 +10,8 @@ class NotificacionApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void testMain() {
+		NotificacionApplication.main(new String[]{"--server.port=0"});
+	}
 }
