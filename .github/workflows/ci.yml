@@ -1,0 +1,235 @@
+name: CI – Tests (Frontend & Backend)
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  # ──────────────────────────────────────────
+  # FRONTEND – Vitest (React + Testing Library)
+  # ──────────────────────────────────────────
+  frontend-tests:
+    name: 🖥️ Frontend Tests (Vitest)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 📦 Instalar dependencias
+        run: npm ci
+
+      - name: 🧪 Ejecutar tests (Vitest)
+        run: npm test -- --run --reporter=verbose
+
+      - name: 🔍 Lint (ESLint)
+        run: npm run lint
+
+  # ──────────────────────────────────────────
+  # BACKEND – microservicio: usuarios
+  # ──────────────────────────────────────────
+  backend-usuarios:
+    name: 🔐 Backend – usuarios
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend/usuarios
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: 🧪 Ejecutar tests + JaCoCo
+        run: ./mvnw clean test --no-transfer-progress
+
+      - name: 📊 Publicar reporte JaCoCo
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-usuarios
+          path: backend/usuarios/target/site/jacoco/
+
+  # ──────────────────────────────────────────
+  # BACKEND – microservicio: blockchain
+  # ──────────────────────────────────────────
+  backend-blockchain:
+    name: ⛓️ Backend – blockchain
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend/blockchain
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: 🧪 Ejecutar tests + JaCoCo
+        run: ./mvnw clean test --no-transfer-progress
+
+      - name: 📊 Publicar reporte JaCoCo
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-blockchain
+          path: backend/blockchain/target/site/jacoco/
+
+  # ──────────────────────────────────────────
+  # BACKEND – microservicio: documentos
+  # ──────────────────────────────────────────
+  backend-documentos:
+    name: 📄 Backend – documentos
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend/documentos
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: 🧪 Ejecutar tests + JaCoCo
+        run: ./mvnw clean test --no-transfer-progress
+
+      - name: 📊 Publicar reporte JaCoCo
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-documentos
+          path: backend/documentos/target/site/jacoco/
+
+  # ──────────────────────────────────────────
+  # BACKEND – microservicio: notificacion
+  # ──────────────────────────────────────────
+  backend-notificacion:
+    name: 🔔 Backend – notificacion
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend/notificacion
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: 🧪 Ejecutar tests + JaCoCo
+        run: ./mvnw clean test --no-transfer-progress
+
+      - name: 📊 Publicar reporte JaCoCo
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-notificacion
+          path: backend/notificacion/target/site/jacoco/
+
+  # ──────────────────────────────────────────
+  # BACKEND – microservicio: Validacion
+  # ──────────────────────────────────────────
+  backend-validacion:
+    name: ✅ Backend – Validacion
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend/Validacion
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: 🧪 Ejecutar tests + JaCoCo
+        run: ./mvnw clean test --no-transfer-progress
+
+      - name: 📊 Publicar reporte JaCoCo
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-validacion
+          path: backend/Validacion/target/site/jacoco/
+
+  # ──────────────────────────────────────────
+  # JOB FINAL – resumen de todos los jobs
+  # ──────────────────────────────────────────
+  ci-summary:
+    name: 🏁 CI Completo
+    runs-on: ubuntu-latest
+    needs:
+      - frontend-tests
+      - backend-usuarios
+      - backend-blockchain
+      - backend-documentos
+      - backend-notificacion
+      - backend-validacion
+    if: always()
+
+    steps:
+      - name: ✅ Verificar que todos los jobs pasaron
+        run: |
+          echo "Frontend : ${{ needs.frontend-tests.result }}"
+          echo "Usuarios : ${{ needs.backend-usuarios.result }}"
+          echo "Blockchain : ${{ needs.backend-blockchain.result }}"
+          echo "Documentos : ${{ needs.backend-documentos.result }}"
+          echo "Notificacion : ${{ needs.backend-notificacion.result }}"
+          echo "Validacion : ${{ needs.backend-validacion.result }}"
+
+          if [[ "${{ needs.frontend-tests.result }}" != "success" ||
+                "${{ needs.backend-usuarios.result }}" != "success" ||
+                "${{ needs.backend-blockchain.result }}" != "success" ||
+                "${{ needs.backend-documentos.result }}" != "success" ||
+                "${{ needs.backend-notificacion.result }}" != "success" ||
+                "${{ needs.backend-validacion.result }}" != "success" ]]; then
+            echo "❌ Uno o más jobs fallaron."
+            exit 1
+          fi
+          echo "✅ Todos los tests pasaron correctamente."
