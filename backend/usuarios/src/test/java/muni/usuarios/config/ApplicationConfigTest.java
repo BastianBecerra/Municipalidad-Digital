@@ -47,18 +47,18 @@ class ApplicationConfigTest {
 
         // Scenario 1: RUT found
         Usuarios u = new Usuarios();
-        u.setRut("123");
-        when(usuarioRepository.findByRut("123")).thenReturn(Optional.of(u));
+        u.setRut("12-3");
+        when(usuarioRepository.findByRut("12-3")).thenReturn(Optional.of(u));
         assertThat(service.loadUserByUsername("123")).isSameAs(u);
 
         // Scenario 2: RUT not found, Email found
-        when(usuarioRepository.findByRut("456")).thenReturn(Optional.empty());
-        when(usuarioRepository.findByEmail("456")).thenReturn(Optional.of(u));
+        when(usuarioRepository.findByRut("45-6")).thenReturn(Optional.empty());
+        when(usuarioRepository.findByEmail("45-6")).thenReturn(Optional.of(u));
         assertThat(service.loadUserByUsername("456")).isSameAs(u);
 
         // Scenario 3: Neither found
-        when(usuarioRepository.findByRut("789")).thenReturn(Optional.empty());
-        when(usuarioRepository.findByEmail("789")).thenReturn(Optional.empty());
+        when(usuarioRepository.findByRut("78-9")).thenReturn(Optional.empty());
+        when(usuarioRepository.findByEmail("78-9")).thenReturn(Optional.empty());
         assertThatThrownBy(() -> service.loadUserByUsername("789"))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessageContaining("Usuario no encontrado con RUT o Email");

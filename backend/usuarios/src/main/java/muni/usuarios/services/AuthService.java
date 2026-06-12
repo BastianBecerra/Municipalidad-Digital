@@ -25,11 +25,15 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse login(LoginRequest request) {
-        String username = (request.getRut() != null && !request.getRut().isEmpty()) ? request.getRut() : request.getEmail();
+        String rawUsername = (request.getRut() != null && !request.getRut().isEmpty()) ? request.getRut() : request.getEmail();
 
-        if (username == null || username.isEmpty()) {
+        if (rawUsername == null || rawUsername.isEmpty()) {
             throw new RuntimeException("Debe proporcionar un RUT o un Email para iniciar sesión");
         }
+
+        final String username = !rawUsername.contains("@") 
+                ? muni.usuarios.security.RutUtils.formatRut(rawUsername) 
+                : rawUsername;
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
