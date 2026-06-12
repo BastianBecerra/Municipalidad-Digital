@@ -25,6 +25,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
 
         boolean isEmail = username.contains("@");
+        if (!isEmail) {
+            username = RutUtils.formatRut(username);
+        }
         Optional<Usuarios> usuarioOpt = isEmail ? usuarioRepository.findByEmail(username) : usuarioRepository.findByRut(username);
 
         if (usuarioOpt.isEmpty()) {

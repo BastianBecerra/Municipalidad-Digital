@@ -50,7 +50,7 @@ class AuthServiceTest {
         Usuarios u = new Usuarios();
         u.setRut("12345678-9");
 
-        when(usuarioRepository.findByRut("12345678-9")).thenReturn(Optional.of(u));
+        when(usuarioRepository.findByRut("12.345.678-9")).thenReturn(Optional.of(u));
         when(jwtService.generateToken(u)).thenReturn("mock_token");
 
         AuthResponse res = authService.login(req);
@@ -89,8 +89,8 @@ class AuthServiceTest {
         req.setRut("123");
         req.setPassword("pass");
 
-        when(usuarioRepository.findByRut("123")).thenReturn(Optional.empty());
-        when(usuarioRepository.findByEmail("123")).thenReturn(Optional.empty());
+        when(usuarioRepository.findByRut("12-3")).thenReturn(Optional.empty());
+        when(usuarioRepository.findByEmail("12-3")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> authService.login(req))
                 .isInstanceOf(RuntimeException.class)
