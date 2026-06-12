@@ -1,0 +1,18 @@
+services:
+  app-blockchain:
+    build: .
+    container_name: app-blockchain
+    restart: unless-stopped
+    ports:
+      - "8087:8087"
+    environment:
+      # Sobreescribe con variables de entorno si se desea evitar hardcodear claves
+      BLOCKCHAIN_NODE_URL: ${BLOCKCHAIN_NODE_URL:-https://eth-sepolia.g.alchemy.com/v2/WiUJ_abpoYfsTNJA-g3-3}
+      BLOCKCHAIN_PRIVATE_KEY: ${BLOCKCHAIN_PRIVATE_KEY:-0x4bbb7f16d3a25e1203f6124c2bd47d463a0830a61e9a45d42947b1cea85a9787}
+      BLOCKCHAIN_CONTRACT_ADDRESS: ${BLOCKCHAIN_CONTRACT_ADDRESS:-0xE1A7Ba537F7711Ced5F8Ed44445cF974CB49441a}
+    networks:
+      - muni-network
+
+networks:
+  muni-network:
+    external: true
