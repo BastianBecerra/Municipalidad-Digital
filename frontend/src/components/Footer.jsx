@@ -28,7 +28,7 @@ const Footer = () => {
               <li><a href="/">Inicio</a></li>
               {/* Uso de rutas con hash para navegar a las anclas de la página */}
               <li><a href="/#tramites">Trámites Destacados</a></li>
-              <li><a href="/#encuentra-notarias">Juntas de Vecinos</a></li>
+              <li><a href="/junta-vecinos">Juntas de Vecinos</a></li>
             </ul>
           </div>
 

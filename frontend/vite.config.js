@@ -14,6 +14,10 @@ export default defineConfig({
         target: 'http://localhost:8086',
         changeOrigin: true,
       },
+      '/territorios': {
+        target: 'http://localhost:8086',
+        changeOrigin: true,
+      },
       '/api/blockchain': {
         target: 'http://localhost:8087',
         changeOrigin: true,

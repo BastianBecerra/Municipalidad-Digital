@@ -7,21 +7,24 @@ const procedures = [
     title: 'Certificados',
     description: 'Obtén certificados de residencia, nacimiento y más al instante.',
     icon: '📄',
-    color: 'blue'
+    color: 'blue',
+    path: '/tramites/nuevo?tipo=residencia'
   },
   {
     id: 2,
     title: 'Salvocondutos',
     description: 'Accede aquí para iniciar tu trámite.',
     icon: '🚗',
-    color: 'indigo'
+    color: 'indigo',
+    path: '/tramites/nuevo?tipo=salvoconducto'
   },
   {
     id: 3,
     title: 'Juntas de vecinos',
     description: 'Obtén información sobre las juntas de vecinos de tu comuna.',
     icon: '📄',
-    color: 'green'
+    color: 'green',
+    path: '/junta-vecinos'
   }
 ];
 
@@ -46,7 +49,7 @@ const ProcedureCards = () => {
               </div>
               <h3 className="card-title">{proc.title}</h3>
               <p className="card-desc">{proc.description}</p>
-              <a href="/tramites/nuevo" className="card-link">
+              <a href={proc.path} className="card-link">
                 Iniciar trámite <span>→</span>
               </a>
             </div>

@@ -211,8 +211,207 @@
   gap: 8px;
 }
 
-/* --- Animaciones Keyframes --- */
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes laserSweep { 0%, 100% { top: 12.5%; } 50% { top: 87.5%; } }
 @keyframes pulseGlow { 0%, 100% { transform: scale(0.95); opacity: 0.4; } 50% { transform: scale(1.05); opacity: 0.8; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* =============================================
+   SECCIÓN DE RESULTADOS — DISEÑO PREMIUM
+   ============================================= */
+
+.result-section {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.45s ease-out forwards;
+}
+
+/* --- Badge de Estado Central --- */
+.result-status-center {
+  text-align: center;
+}
+
+.result-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 32px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.badge-valid {
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.badge-invalid {
+  background: rgba(239, 68, 68, 0.12);
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+}
+
+.badge-icon {
+  font-size: 1.4rem;
+}
+
+.result-status-msg {
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* --- Grid de Tarjetas de Datos --- */
+.result-data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.result-data-grid.single-col {
+  grid-template-columns: 1fr;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* --- Tarjeta de Datos Premium --- */
+.result-data-card {
+  padding: 24px;
+}
+
+.rdc-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.rdc-icon {
+  font-size: 1.4rem;
+}
+
+.rdc-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.rdc-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin-bottom: 16px;
+}
+
+.rdc-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rdc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 12px;
+}
+
+.rdc-row:last-child {
+  border-bottom: none;
+}
+
+/* Variante de fila en columna para valores largos */
+.rdc-row-col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.rdc-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rdc-value {
+  font-size: 0.88rem;
+  color: var(--text-color);
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Tipo / Categoría del documento en color primario */
+.rdc-accent {
+  color: var(--primary-color) !important;
+}
+
+/* Valores con fuente monoespaciada */
+.rdc-mono {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.3px;
+}
+
+/* Hash criptográfico largo — permite ruptura de línea */
+.rdc-hash {
+  color: var(--primary-color) !important;
+  word-break: break-all;
+  text-align: left !important;
+}
+
+/* --- Sello Blockchain --- */
+.blockchain-seal-badge {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.18) 0%, rgba(37, 99, 235, 0.1) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #60a5fa;
+  letter-spacing: 0.8px;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* --- Botón de Reinicio --- */
+.result-reset-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .result-data-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .result-status-badge {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+}
