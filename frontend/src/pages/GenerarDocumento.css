@@ -146,3 +146,12 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.cu-input.input-readonly,
+.dark-mode .cu-input.input-readonly {
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+  cursor: default;
+  box-shadow: none !important;
+}

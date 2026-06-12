@@ -1,0 +1,31 @@
+services:
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog-notificacion
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Interfaz web para ver correos enviados
+    networks:
+      - muni-network
+
+  app-notificacion:
+    build: .
+    container_name: app-notificacion
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_MAIL_HOST: mailhog
+      SPRING_MAIL_PORT: 1025
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "false"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "false"
+      JWT_SECRET: ${JWT_SECRET:-bXVuaS1kaWdpdGFsLXNlY3JldC1rZXktMjAyNC1zZWN1cmUtand0LXRva2Vu}
+    depends_on:
+      - mailhog
+    networks:
+      - muni-network
+
+networks:
+  muni-network:
+    external: true

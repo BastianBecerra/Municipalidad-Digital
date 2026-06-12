@@ -20,9 +20,12 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> usuarioRepository.findByRut(username)
-                .orElseGet(() -> usuarioRepository.findByEmail(username)
-                        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con RUT o Email: " + username)));
+        return username -> {
+            String formattedUsername = username.contains("@") ? username : muni.usuarios.security.RutUtils.formatRut(username);
+            return usuarioRepository.findByRut(formattedUsername)
+                    .orElseGet(() -> usuarioRepository.findByEmail(formattedUsername)
+                            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con RUT o Email: " + username)));
+        };
     }
 
     @Bean

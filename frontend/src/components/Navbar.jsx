@@ -8,6 +8,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false); // Determina si la página ha sido desplazada
   const [menuOpen, setMenuOpen] = useState(false); // Alterna el menú en móviles
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Controla si el usuario tiene sesión activa
+  const [userRole, setUserRole] = useState(null); // Rol del usuario actual
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +20,30 @@ const Navbar = () => {
 
     // Verificación inicial de sesión al cargar el componente
     // Comprueba si existe un token en el almacenamiento local
-    setIsLoggedIn(!!localStorage.getItem('token'));
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+    
+    if (token) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const base64Url = parts[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          const decoded = JSON.parse(jsonPayload);
+          setUserRole(decoded.rol);
+        } else {
+          setUserRole(null);
+        }
+      } catch (e) {
+        console.error('Error al decodificar el token de sesión', e);
+        setUserRole(null);
+      }
+    } else {
+      setUserRole(null);
+    }
 
     // Limpieza del event listener al desmontar el componente
     return () => window.removeEventListener('scroll', handleScroll);
@@ -44,9 +68,13 @@ const Navbar = () => {
 
           <a href="/tramites/nuevo" onClick={() => setMenuOpen(false)}>Trámites</a>
 
-          <a href="/tramites/nuevo" onClick={() => setMenuOpen(false)}>Juntas de vecinos</a>
+          <a href="/junta-vecinos" onClick={() => setMenuOpen(false)}>Juntas de vecinos</a>
 
           <a href="/contacto" onClick={(e) => { e.preventDefault(); setMenuOpen(false); navigate('/contacto'); }}>Contacto</a>
+          
+          {isLoggedIn && (userRole === 'ADMIN' || userRole === 'FUNCIONARIO') && (
+            <a href="/validar" onClick={(e) => { e.preventDefault(); setMenuOpen(false); navigate('/validar'); }}>Validar</a>
+          )}
           
           {/* Renderizado condicional: cambia el botón dependiendo del estado de sesión */}
           {isLoggedIn ? (

@@ -209,7 +209,7 @@ class SecurityComponentsTest {
         u.setRol("ADMIN");
         u.setActivo(true);
 
-        when(usuarioRepository.findByRut("12345678-9")).thenReturn(Optional.of(u));
+        when(usuarioRepository.findByRut("12.345.678-9")).thenReturn(Optional.of(u));
         when(passwordEncoder.matches("raw_cu", "encoded_cu")).thenReturn(true);
 
         Authentication auth = new UsernamePasswordAuthenticationToken("12345678-9", "raw_cu");
@@ -221,7 +221,7 @@ class SecurityComponentsTest {
 
     @Test
     void testAuthenticate_UserNotFound() {
-        when(usuarioRepository.findByRut("123")).thenReturn(Optional.empty());
+        when(usuarioRepository.findByRut("12-3")).thenReturn(Optional.empty());
 
         Authentication auth = new UsernamePasswordAuthenticationToken("123", "pass");
         assertThatThrownBy(() -> customAuthenticationProvider.authenticate(auth))
@@ -264,7 +264,7 @@ class SecurityComponentsTest {
         u.setRut("123");
         u.setPasswordClaveUnica("encoded_cu");
 
-        when(usuarioRepository.findByRut("123")).thenReturn(Optional.of(u));
+        when(usuarioRepository.findByRut("12-3")).thenReturn(Optional.of(u));
         when(passwordEncoder.matches("wrong_cu", "encoded_cu")).thenReturn(false);
 
         Authentication auth = new UsernamePasswordAuthenticationToken("123", "wrong_cu");
@@ -279,7 +279,7 @@ class SecurityComponentsTest {
         u.setRut("123");
         u.setPasswordClaveUnica(null);
 
-        when(usuarioRepository.findByRut("123")).thenReturn(Optional.of(u));
+        when(usuarioRepository.findByRut("12-3")).thenReturn(Optional.of(u));
 
         Authentication auth = new UsernamePasswordAuthenticationToken("123", "pass");
         assertThatThrownBy(() -> customAuthenticationProvider.authenticate(auth))
@@ -294,7 +294,7 @@ class SecurityComponentsTest {
         u.setPasswordClaveUnica("encoded_cu");
         u.setActivo(false);
 
-        when(usuarioRepository.findByRut("123")).thenReturn(Optional.of(u));
+        when(usuarioRepository.findByRut("12-3")).thenReturn(Optional.of(u));
         when(passwordEncoder.matches("raw_cu", "encoded_cu")).thenReturn(true);
 
         Authentication auth = new UsernamePasswordAuthenticationToken("123", "raw_cu");
