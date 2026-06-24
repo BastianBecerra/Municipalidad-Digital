@@ -16,7 +16,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: frontend
+        working-directory: PRODUCTO/frontend
 
     steps:
       - name: 📥 Checkout código
@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: PRODUCTO/frontend/package-lock.json
 
       - name: 📦 Instalar dependencias
         run: npm ci
@@ -47,7 +47,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend/usuarios
+        working-directory: PRODUCTO/backend/usuarios
 
     steps:
       - name: 📥 Checkout código
@@ -68,7 +68,7 @@ jobs:
         if: always()
         with:
           name: jacoco-usuarios
-          path: backend/usuarios/target/site/jacoco/
+          path: PRODUCTO/backend/usuarios/target/site/jacoco/
 
   # ──────────────────────────────────────────
   # BACKEND – microservicio: blockchain
@@ -79,7 +79,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend/blockchain
+        working-directory: PRODUCTO/backend/blockchain
 
     steps:
       - name: 📥 Checkout código
@@ -100,7 +100,7 @@ jobs:
         if: always()
         with:
           name: jacoco-blockchain
-          path: backend/blockchain/target/site/jacoco/
+          path: PRODUCTO/backend/blockchain/target/site/jacoco/
 
   # ──────────────────────────────────────────
   # BACKEND – microservicio: documentos
@@ -111,7 +111,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend/documentos
+        working-directory: PRODUCTO/backend/documentos
 
     steps:
       - name: 📥 Checkout código
@@ -132,7 +132,7 @@ jobs:
         if: always()
         with:
           name: jacoco-documentos
-          path: backend/documentos/target/site/jacoco/
+          path: PRODUCTO/backend/documentos/target/site/jacoco/
 
   # ──────────────────────────────────────────
   # BACKEND – microservicio: notificacion
@@ -143,7 +143,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend/notificacion
+        working-directory: PRODUCTO/backend/notificacion
 
     steps:
       - name: 📥 Checkout código
@@ -164,7 +164,7 @@ jobs:
         if: always()
         with:
           name: jacoco-notificacion
-          path: backend/notificacion/target/site/jacoco/
+          path: PRODUCTO/backend/notificacion/target/site/jacoco/
 
   # ──────────────────────────────────────────
   # BACKEND – microservicio: Validacion
@@ -175,7 +175,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend/Validacion
+        working-directory: PRODUCTO/backend/Validacion
 
     steps:
       - name: 📥 Checkout código
@@ -196,7 +196,7 @@ jobs:
         if: always()
         with:
           name: jacoco-validacion
-          path: backend/Validacion/target/site/jacoco/
+          path: PRODUCTO/backend/Validacion/target/site/jacoco/
 
   # ──────────────────────────────────────────
   # JOB FINAL – resumen de todos los jobs
