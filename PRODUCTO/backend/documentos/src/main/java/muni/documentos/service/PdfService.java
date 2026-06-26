@@ -312,12 +312,23 @@ public class PdfService {
         try {
             String qrUrl = safe(doc.getCodigoQrUrl(), "https://muni.digital/validar/sin-hash");
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            BitMatrix bitMatrix = qrCodeWriter.encode(qrUrl, BarcodeFormat.QR_CODE, 120, 120);
+            
+            // Usar hints para generar un QR de alta definición y reducir márgenes
+            java.util.Map<com.google.zxing.EncodeHintType, Object> hints = new java.util.HashMap<>();
+            hints.put(com.google.zxing.EncodeHintType.ERROR_CORRECTION, com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.M);
+            hints.put(com.google.zxing.EncodeHintType.MARGIN, 1);
+            
+            // Generar a 350x350 píxeles para conservar la nitidez de los módulos
+            BitMatrix bitMatrix = qrCodeWriter.encode(qrUrl, BarcodeFormat.QR_CODE, 350, 350, hints);
             ByteArrayOutputStream qrOut = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", qrOut);
 
             Image qrImage = Image.getInstance(qrOut.toByteArray());
             qrImage.setAlignment(Element.ALIGN_CENTER);
+            
+            // Escalar la imagen de 350px a 120x120 puntos en el PDF para lograr máxima nitidez vectorial
+            qrImage.scaleAbsolute(120f, 120f);
+            
             document.add(new Paragraph(" "));
             document.add(qrImage);
 

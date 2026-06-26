@@ -1,0 +1,13 @@
+services:
+  eureka-server:
+    build: .
+    container_name: eureka-server
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    networks:
+      - muni-network
+
+networks:
+  muni-network:
+    external: true
