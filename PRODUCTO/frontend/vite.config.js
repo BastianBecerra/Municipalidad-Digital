@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
   // Carga variables de entorno del sistema y de archivos .env sin prefijo VITE_
   const env = loadEnv(mode, process.cwd(), '')
-  const gatewayTarget = env.VITE_PROXY_GATEWAY || 'http://localhost:8080'
+  const gatewayTarget = process.env.VITE_PROXY_GATEWAY || env.VITE_PROXY_GATEWAY || 'http://localhost:8080'
 
   return {
     plugins: [react()],
