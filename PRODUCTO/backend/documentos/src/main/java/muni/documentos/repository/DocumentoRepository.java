@@ -12,12 +12,9 @@ import java.util.Optional;
 @Repository
 public interface DocumentoRepository extends JpaRepository<Documento, Long> {
 
-    @Query(value = 
-        "SELECT d.* FROM documentos d " +
-        "LEFT JOIN documentos_residencia r ON d.id = r.id " +
-        "LEFT JOIN documentos_salvoconducto s ON d.id = s.id " +
-        "WHERE r.usuario_rut = :rut OR s.usuario_rut = :rut", 
-        nativeQuery = true)
+    @Query("SELECT d FROM Documento d WHERE " +
+           "TREAT(d AS DocumentoResidencia).usuarioRut = :rut OR " +
+           "TREAT(d AS DocumentoSalvoconducto).usuarioRut = :rut")
     List<Documento> findByUsuarioRut(@Param("rut") String rut);
 
     Optional<Documento> findByHashSha256(String hashSha256);

@@ -154,4 +154,50 @@
   border-color: var(--border-color) !important;
   cursor: default;
   box-shadow: none !important;
+}
+
+/* Indicador de estado de descarga en el modal de éxito */
+.download-status-indicator {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.download-status-indicator.status-downloading {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.download-status-indicator.status-completed {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+  animation: bounceScale 0.3s ease-out;
+}
+
+.download-status-indicator.status-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.download-status-indicator.status-idle {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border-color: var(--border-color);
+}
+
+@keyframes bounceScale {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
 }

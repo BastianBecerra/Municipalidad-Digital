@@ -30,6 +30,7 @@ const GenerarDocumento = () => {
   const [tipoTramite, setTipoTramite] = useState(queryTipo || 'residencia');
   const [profile, setProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [profileError, setProfileError] = useState(false);
   const [formData, setFormData] = useState({
     rut: '',
     nombreCompleto: '',
@@ -53,6 +54,10 @@ const GenerarDocumento = () => {
   const [modalTitle, setModalTitle] = useState('');
   const [modalType, setModalType] = useState('info');
   const [modalContent, setModalContent] = useState(null);
+  const [createdDocId, setCreatedDocId] = useState(null);
+  const [createdDocStatus, setCreatedDocStatus] = useState('');
+  const [createdDocBlockchainStatus, setCreatedDocBlockchainStatus] = useState('');
+  const [downloadStatus, setDownloadStatus] = useState('idle'); // 'idle' | 'downloading' | 'completed' | 'error'
 
   const navigate = useNavigate();
 
@@ -86,9 +91,11 @@ const GenerarDocumento = () => {
         const data = await response.json();
         console.log('User profile loaded:', data);
         setProfile(data);
+        setProfileError(false);
       } catch (err) {
         console.error('Failed to load profile:', err);
-        setError('No se pudo cargar el perfil del usuario. Intenta iniciar sesión de nuevo.');
+        setProfileError(true);
+        // No bloquear la UI completa, solo mostrar advertencia
       } finally {
         setLoadingProfile(false);
       }
@@ -143,11 +150,12 @@ const GenerarDocumento = () => {
   };
 
   const validateAll = () => {
-    const fields = ['rut', 'nombreCompleto', 'motivo'];
-    if (tipoTramite === 'residencia') {
-      fields.push('direccion', 'comuna');
-    } else if (tipoTramite === 'salvoconducto') {
-      fields.push('direccion');
+    // Solo validar los campos que el usuario debe rellenar manualmente.
+    // Los campos readonly (rut, nombreCompleto, direccion, comuna) vienen del
+    // perfil autenticado y son datos de confianza — no se validan en el frontend.
+    const fields = ['motivo'];
+    if (tipoTramite === 'salvoconducto') {
+      fields.push('direccion'); // el usuario ingresa la dirección destino
     } else if (tipoTramite === 'junta-vecinal') {
       fields.push('rutMinistroDeFe');
     }
@@ -185,6 +193,7 @@ const GenerarDocumento = () => {
 
   const handleDownloadPdf = async (docId) => {
     try {
+      setDownloadStatus('downloading');
       const token = localStorage.getItem('token');
       const response = await fetch(`/documentos/${docId}/pdf`, {
         headers: {
@@ -196,22 +205,46 @@ const GenerarDocumento = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `documento_${docId}.pdf`);
+
+      // Limpiar y normalizar strings para usarlos en el nombre del archivo
+      const cleanString = (str) => {
+        return str
+          ? str.toLowerCase()
+               .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remover acentos
+               .replace(/[^a-z0-9]/g, "_")                       // caracteres no alfanuméricos por guiones bajos
+               .replace(/_+/g, "_")                              // encoger guiones múltiples
+               .replace(/(^_|_$)/g, "")                          // quitar extremos
+          : "";
+      };
+
+      const docType = tipoTramite === 'residencia' ? 'certificado_residencia' : tipoTramite === 'salvoconducto' ? 'salvoconducto' : 'acta_junta_vecinal';
+      const citizen = cleanString(formData.nombreCompleto);
+      const filename = `${docType}_${citizen}_${docId}.pdf`;
+
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
+      setDownloadStatus('completed');
     } catch (err) {
       console.error(err);
-      setModalTitle('Error de Descarga');
-      setModalType('error');
-      setModalContent(<p>No se pudo descargar el archivo PDF del documento.</p>);
-      setIsModalOpen(true);
+      setDownloadStatus('error');
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateAll()) return;
+    if (!validateAll()) {
+      setError('Por favor completa todos los campos requeridos antes de continuar.');
+      return;
+    }
+    setError(null);
+
+    // Si el perfil no cargó, re-intentar cargar primero
+    if (!profile) {
+      setError('No se pudo cargar tu perfil. Por favor, recarga la página o inicia sesión nuevamente.');
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -267,74 +300,20 @@ const GenerarDocumento = () => {
         setTouched({});
         setFieldErrors({});
         
-        // Mostrar modal de éxito con opción de descargar PDF y mostrar TODOS los datos
-        setModalTitle('Solicitud Generada');
+        setCreatedDocId(data.id);
+        setCreatedDocStatus(data.estado);
+        setCreatedDocBlockchainStatus(data.estadoBlockchain);
+        
+        // Trigger automatic download if enabled in settings
+        const autoDownloadPref = localStorage.getItem('autoDownload');
+        if (autoDownloadPref !== 'false') {
+          handleDownloadPdf(data.id);
+        } else {
+          setDownloadStatus('idle');
+        }
+        
+        setModalTitle('¡Solicitud Creada con Éxito!');
         setModalType('success');
-        setModalContent(
-          <div className="modal-success-content">
-            <p>El documento ha sido generado exitosamente.</p>
-            <div style={{ marginTop: '16px', background: '#f3f4f6', padding: '16px', borderRadius: '8px', textAlign: 'left', color: '#1f2937' }}>
-              <h4 style={{ margin: '0 0 12px 0', borderBottom: '1px solid #e5e7eb', paddingBottom: '6px', fontSize: '15px', fontWeight: 'bold' }}>
-                Resumen del Documento
-              </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '6px', fontSize: '13px', lineHeight: '1.4' }}>
-                <div><strong>Trámite:</strong></div>
-                <div>{tipoTramite === 'residencia' ? 'Certificado de Residencia' : tipoTramite === 'salvoconducto' ? 'Salvoconducto' : 'Acta de Junta de Vecinos'}</div>
-                
-                <div><strong>Solicitante:</strong></div>
-                <div>{formData.nombreCompleto}</div>
-                
-                <div><strong>RUT:</strong></div>
-                <div>{formData.rut}</div>
-
-                {tipoTramite === 'residencia' && (
-                  <>
-                    <div><strong>Dirección:</strong></div>
-                    <div>{formData.direccion}</div>
-                    <div><strong>Comuna:</strong></div>
-                    <div>{formData.comuna}</div>
-                  </>
-                )}
-
-                {tipoTramite === 'salvoconducto' && (
-                  <>
-                    <div><strong>Destino:</strong></div>
-                    <div>{formData.direccion}</div>
-                  </>
-                )}
-
-                {tipoTramite === 'junta-vecinal' && (
-                  <>
-                    <div><strong>Junta de Vecinos:</strong></div>
-                    <div>{formData.nombreJuntaVecinal} (ID: {formData.juntaVecinosId})</div>
-                    <div><strong>Tipo de Acta:</strong></div>
-                    <div>{formData.tipoActa}</div>
-                    <div><strong>Ministro de Fe:</strong></div>
-                    <div>{formData.rutMinistroDeFe}</div>
-                  </>
-                )}
-
-                <div style={{ gridColumn: '1 / span 2', borderTop: '1px solid #e5e7eb', marginTop: '6px', paddingTop: '6px' }}></div>
-
-                <div><strong>ID Documento:</strong></div>
-                <div>{data.id}</div>
-                
-                <div><strong>Estado:</strong></div>
-                <div>{data.estado}</div>
-                
-                <div><strong>Blockchain:</strong></div>
-                <div>{data.estadoBlockchain || 'REGISTRADO'}</div>
-              </div>
-            </div>
-            <button 
-              onClick={() => handleDownloadPdf(data.id)} 
-              className="btn btn-primary" 
-              style={{ marginTop: '20px', width: '100%', padding: '12px' }}
-            >
-              📥 Descargar Documento (PDF)
-            </button>
-          </div>
-        );
         setIsModalOpen(true);
       } else {
         setModalTitle('Error');
@@ -369,14 +348,8 @@ const GenerarDocumento = () => {
               }
             `}</style>
           </div>
-        ) : error ? (
-          <div className="status-box error-box">{error}</div>
         ) : (
           <div className="generar-card glass-card">
-            <div className="generar-header">
-              <span className="icon">📝</span>
-              <h1>Generar Solicitud</h1>
-            </div>
 
             {/* Formulario de solicitud */}
             <form className="generar-form" onSubmit={handleSubmit} noValidate>
@@ -479,8 +452,15 @@ const GenerarDocumento = () => {
                 {touched.motivo && fieldErrors.motivo && <span className="field-error">{fieldErrors.motivo}</span>}
               </div>
               
+              {/* Error de envío */}
+              {error && (
+                <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', padding: '0.75rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                  {error}
+                </div>
+              )}
+
               {/* Botón de envío */}
-              <button type="submit" className="btn btn-primary btn-submit" disabled={loading || !profile}>
+              <button type="submit" className="btn btn-primary btn-submit" disabled={loading}>
                 {loading ? 'Enviando...' : 'Solicitar Documento'}
               </button>
             </form>
@@ -495,7 +475,121 @@ const GenerarDocumento = () => {
         title={modalTitle} 
         type={modalType}
       >
-        {modalContent}
+        {modalType === 'success' ? (
+          <div className="modal-success-content">
+            <p>El documento ha sido generado exitosamente. <strong>La descarga del archivo PDF comenzará automáticamente.</strong></p>
+            
+            {/* Indicador visual de estado de descarga */}
+            <div className={`download-status-indicator status-${downloadStatus}`}>
+              {downloadStatus === 'downloading' && (
+                <>
+                  <span className="spinner-mini"></span>
+                  <span>Descargando archivo PDF...</span>
+                </>
+              )}
+              {downloadStatus === 'completed' && (
+                <span>Descarga completada con exito.</span>
+              )}
+              {downloadStatus === 'error' && (
+                <span>Error al descargar. Usa el boton de abajo.</span>
+              )}
+              {downloadStatus === 'idle' && (
+                <span>Descarga automatica desactivada.</span>
+              )}
+            </div>
+
+            <div style={{ marginTop: '16px', background: '#f3f4f6', padding: '16px', borderRadius: '8px', textAlign: 'left', color: '#1f2937' }}>
+              <h4 style={{ margin: '0 0 12px 0', borderBottom: '1px solid #e5e7eb', paddingBottom: '6px', fontSize: '15px', fontWeight: 'bold' }}>
+                Resumen del Documento
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '6px', fontSize: '13px', lineHeight: '1.4' }}>
+                <div><strong>Trámite:</strong></div>
+                <div>{tipoTramite === 'residencia' ? 'Certificado de Residencia' : tipoTramite === 'salvoconducto' ? 'Salvoconducto' : 'Acta de Junta de Vecinos'}</div>
+                
+                <div><strong>Solicitante:</strong></div>
+                <div>{formData.nombreCompleto}</div>
+                
+                <div><strong>RUT:</strong></div>
+                <div>{formData.rut}</div>
+
+                {tipoTramite === 'residencia' && (
+                  <>
+                    <div><strong>Dirección:</strong></div>
+                    <div>{formData.direccion}</div>
+                    <div><strong>Comuna:</strong></div>
+                    <div>{formData.comuna}</div>
+                  </>
+                )}
+
+                {tipoTramite === 'salvoconducto' && (
+                  <>
+                    <div><strong>Destino:</strong></div>
+                    <div>{formData.direccion}</div>
+                  </>
+                )}
+
+                {tipoTramite === 'junta-vecinal' && (
+                  <>
+                    <div><strong>Junta de Vecinos:</strong></div>
+                    <div>{formData.nombreJuntaVecinal} (ID: {formData.juntaVecinosId})</div>
+                    <div><strong>Tipo de Acta:</strong></div>
+                    <div>{formData.tipoActa}</div>
+                    <div><strong>Ministro de Fe:</strong></div>
+                    <div>{formData.rutMinistroDeFe}</div>
+                  </>
+                )}
+
+                <div style={{ gridColumn: '1 / span 2', borderTop: '1px solid #e5e7eb', marginTop: '6px', paddingTop: '6px' }}></div>
+
+                <div><strong>ID Documento:</strong></div>
+                <div>{createdDocId}</div>
+                
+                <div><strong>Estado:</strong></div>
+                <div>{createdDocStatus}</div>
+                
+                <div><strong>Blockchain:</strong></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    background: createdDocBlockchainStatus === 'CONFIRMADO' ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
+                    color: createdDocBlockchainStatus === 'CONFIRMADO' ? '#34d399' : '#fcd34d',
+                    border: createdDocBlockchainStatus === 'CONFIRMADO' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(245,158,11,0.3)'
+                  }}>
+                    {createdDocBlockchainStatus || 'PROCESANDO'}
+                  </span>
+                  {createdDocBlockchainStatus !== 'CONFIRMADO' && (
+                    <span style={{ fontSize: '11px', color: '#9ca3af' }}>
+                      (verificar en Mis Documentos)
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+              <button 
+                onClick={() => handleDownloadPdf(createdDocId)} 
+                className="btn btn-secondary" 
+                style={{ flex: 1, padding: '10px', fontSize: '14px', cursor: 'pointer' }}
+                disabled={downloadStatus === 'downloading'}
+              >
+                {downloadStatus === 'downloading' ? 'Descargando...' : 'Reintentar Descarga'}
+              </button>
+              <button 
+                onClick={() => navigate('/perfil')} 
+                className="btn btn-primary" 
+                style={{ flex: 1, padding: '10px', fontSize: '14px', cursor: 'pointer' }}
+              >
+                Ir a Mis Documentos
+              </button>
+            </div>
+          </div>
+        ) : (
+          modalContent
+        )}
       </Modal>
 
       <Footer />
