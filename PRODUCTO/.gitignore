@@ -1,0 +1,2 @@
+# Ignorar archivos .env locales con credenciales de desarrollo y producción
+**/.env
