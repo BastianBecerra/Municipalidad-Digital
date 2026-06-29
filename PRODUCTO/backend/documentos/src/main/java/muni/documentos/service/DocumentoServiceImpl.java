@@ -36,18 +36,11 @@ public class DocumentoServiceImpl implements DocumentoService {
     private final PdfService pdfService;
     private final IntegrationClient integrationClient;
 
-
     @Value("${muni.usuarios.url:http://app-usuarios:8086/usuarios}")
     private String usuariosApiUrl;
 
     @Value("${muni.territorios.url:http://app-usuarios:8086/territorios}")
     private String territoriosApiUrl;
-
-    @Value("${muni.blockchain.url:http://localhost:8087/api/blockchain}")
-    private String blockchainApiUrl;
-
-    @Value("${muni.notificacion.url:http://localhost:8090/api/notificaciones/public}")
-    private String notificacionApiUrl;
 
     @Override
     public List<Documento> findAll() {
@@ -228,7 +221,8 @@ public class DocumentoServiceImpl implements DocumentoService {
                     nombreDestinatario = usuario.getNombres() + " " + usuario.getApellidoPaterno();
                 }
             }
-            if (salvoconducto.getUsuarioNombreCompleto() != null && !salvoconducto.getUsuarioNombreCompleto().isEmpty()) {
+            if (salvoconducto.getUsuarioNombreCompleto() != null
+                    && !salvoconducto.getUsuarioNombreCompleto().isEmpty()) {
                 nombreDestinatario = salvoconducto.getUsuarioNombreCompleto();
             }
         } else if (savedDoc instanceof DocumentoResidencia) {
@@ -256,7 +250,8 @@ public class DocumentoServiceImpl implements DocumentoService {
             }
         }
 
-        // Realizar la llamada REST al microservicio de notificaciones usando el IntegrationClient protegido con Circuit Breaker
+        // Realizar la llamada REST al microservicio de notificaciones usando el
+        // IntegrationClient protegido con Circuit Breaker
         java.util.Map<String, String> notifRequest = new java.util.HashMap<>();
         notifRequest.put("email", emailDestinatario);
         notifRequest.put("nombreCompleto", nombreDestinatario);
@@ -282,7 +277,8 @@ public class DocumentoServiceImpl implements DocumentoService {
         documentoRepository.saveAndFlush(doc);
 
         try {
-            java.util.Map<?, ?> response = integrationClient.registrarEnBlockchain("DOC-" + doc.getId(), doc.getHashSha256());
+            java.util.Map<?, ?> response = integrationClient.registrarEnBlockchain("DOC-" + doc.getId(),
+                    doc.getHashSha256());
 
             if (response != null && "success".equals(response.get("status"))) {
                 String txHash = (String) response.get("transactionHash");
@@ -296,7 +292,8 @@ public class DocumentoServiceImpl implements DocumentoService {
         } catch (Exception e) {
             doc.setEstadoBlockchain(EstadoBlockchain.ERROR);
             documentoRepository.save(doc);
-            throw new RuntimeException("Error al sincronizar con blockchain (Circuit Breaker activo/Falla): " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Error al sincronizar con blockchain (Circuit Breaker activo/Falla): " + e.getMessage(), e);
         }
 
         documentoRepository.save(doc);
@@ -344,8 +341,8 @@ public class DocumentoServiceImpl implements DocumentoService {
     private HttpHeaders getForwardedHeaders() {
         HttpHeaders headers = new HttpHeaders();
         try {
-            org.springframework.web.context.request.ServletRequestAttributes attributes = 
-                    (org.springframework.web.context.request.ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+            org.springframework.web.context.request.ServletRequestAttributes attributes = (org.springframework.web.context.request.ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder
+                    .getRequestAttributes();
             if (attributes != null) {
                 jakarta.servlet.http.HttpServletRequest request = attributes.getRequest();
                 String authHeader = request.getHeader("Authorization");

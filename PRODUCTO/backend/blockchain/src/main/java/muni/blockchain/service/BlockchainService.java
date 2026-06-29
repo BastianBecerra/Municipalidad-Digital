@@ -48,6 +48,9 @@ public class BlockchainService {
     @Value("${blockchain.contract-address}")
     private String contractAddress;
 
+    @Value("${blockchain.chain-id:11155111}")
+    private long chainId;
+
     public String registrarDocumento(String documentId, String content) throws Exception {
         byte[] hashBytes;
         String cleanContent = content.startsWith("0x") ? content.substring(2) : content;
@@ -65,7 +68,7 @@ public class BlockchainService {
         );
 
         String encodedFunction = FunctionEncoder.encode(function);
-        TransactionManager txManager = new RawTransactionManager(web3j, credentials);
+        TransactionManager txManager = new RawTransactionManager(web3j, credentials, chainId);
         
         EthSendTransaction ethSendTransaction = txManager.sendTransaction(
                 gasProvider.getGasPrice("registrarHash"),
