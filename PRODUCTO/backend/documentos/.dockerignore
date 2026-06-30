@@ -1,0 +1,13 @@
+target/
+.git/
+.vscode/
+.idea/
+*.iml
+*.log
+docker-compose.yml
+postgres-data/
+pgadmin-data/
+HELP.md
+mvnw
+mvnw.cmd
+.mvn/

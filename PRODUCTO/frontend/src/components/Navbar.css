@@ -1,0 +1,153 @@
+/* --- Barra de navegación principal --- */
+.navbar {
+  position: fixed; /* Mantiene la barra fija al tope de la pantalla */
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: transparent; /* Fondo transparente inicial */
+  transition: all 0.3s ease; /* Transición suave para el cambio de color al hacer scroll */
+  z-index: 1000; /* Asegura que la navbar esté siempre sobre el resto del contenido */
+  display: flex;
+  align-items: center;
+}
+
+/* Estilos aplicados cuando el usuario hace scroll hacia abajo */
+.navbar.scrolled {
+  background: var(--card-bg); /* Cambia a un fondo sólido */
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  height: 70px; /* Reduce ligeramente la altura para mayor elegancia */
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between; /* Espaciado entre logo y links */
+  align-items: center;
+  width: 100%;
+}
+
+/* --- Logo --- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.logo-text {
+  color: var(--primary-color);
+}
+
+/* --- Enlaces de navegación --- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-links a {
+  font-weight: 500;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--primary-color);
+}
+
+/* Animación de subrayado personalizado para los links */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%; /* Oculto por defecto */
+  height: 2px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%; /* Expande el subrayado al pasar el mouse */
+}
+
+/* --- Menú móvil (Hamburguesa) --- */
+.mobile-menu-btn {
+  display: none; /* Oculto en pantallas grandes */
+  width: 30px;
+  height: 24px;
+  position: relative;
+}
+
+.hamburger {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-color);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background-color 0.3s ease;
+}
+
+/* Líneas superior e inferior del icono hamburguesa */
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-color);
+  left: 0;
+  transition: transform 0.3s ease, top 0.3s ease;
+}
+
+.hamburger::before { top: -8px; }
+.hamburger::after { top: 8px; }
+
+/* Transformación de la hamburguesa a icono 'X' al abrirse */
+.hamburger.open {
+  background-color: transparent;
+}
+
+.hamburger.open::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.hamburger.open::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+/* --- Diseño Responsivo (Pantallas menores a 768px) --- */
+@media (max-width: 768px) {
+  .nav-links {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--bg-color);
+    flex-direction: column; /* Apila los links verticalmente */
+    padding: 2rem;
+    gap: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-150%); /* Esconde el menú fuera de pantalla */
+    transition: transform 0.3s ease;
+    z-index: 999;
+  }
+
+  .navbar.scrolled .nav-links { top: 70px; }
+  .navbar:not(.scrolled) .nav-links { top: 80px; }
+
+  .nav-links.active {
+    transform: translateY(0); /* Muestra el menú cuando está activo */
+  }
+
+  .mobile-menu-btn {
+    display: block; /* Muestra el botón de hamburguesa en móvil */
+  }
+}

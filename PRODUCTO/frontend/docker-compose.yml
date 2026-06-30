@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build:
+      context: .
+      target: development
+    container_name: frontend-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - VITE_PROXY_GATEWAY=http://api-gateway:8080
+    networks:
+      - muni-network
+
+networks:
+  muni-network:
+    external: true

@@ -1,0 +1,19 @@
+services:
+  app-blockchain:
+    build: .
+    container_name: app-blockchain
+    restart: unless-stopped
+    ports:
+      - "8087:8087"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      BLOCKCHAIN_NODE_URL: ${BLOCKCHAIN_NODE_URL}
+      BLOCKCHAIN_PRIVATE_KEY: ${BLOCKCHAIN_PRIVATE_KEY}
+      BLOCKCHAIN_CONTRACT_ADDRESS: ${BLOCKCHAIN_CONTRACT_ADDRESS}
+      BLOCKCHAIN_CHAIN_ID: ${BLOCKCHAIN_CHAIN_ID:-11155111}
+    networks:
+      - muni-network
+
+networks:
+  muni-network:
+    external: true

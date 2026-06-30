@@ -1,0 +1,17 @@
+services:
+  app-validacion:
+    build: .
+    container_name: app-validacion
+    restart: unless-stopped
+    ports:
+      - "8089:8089"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      MUNI_DOCUMENTOS_URL: http://documentos/documentos
+      MUNI_BLOCKCHAIN_URL: http://blockchain/api/blockchain
+    networks:
+      - muni-network
+
+networks:
+  muni-network:
+    external: true

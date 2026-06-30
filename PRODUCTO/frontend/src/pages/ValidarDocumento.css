@@ -1,0 +1,417 @@
+/* ==========================================
+   VALIDADOR DE DOCUMENTOS - ESTILOS
+   Estructura: Layout, Escáner, Resultados y Blockchain
+   ========================================== */
+
+.validar-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.validar-container {
+  flex: 1;
+  padding-top: 110px;
+  padding-bottom: 60px;
+  max-width: 1000px;
+}
+
+/* --- Cabecera --- */
+.validar-header {
+  margin-bottom: 40px;
+}
+
+/* Insignia decorativa para el título */
+.badge-digital {
+  display: inline-block;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  color: #38bdf8;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+.validar-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.validar-header .subtitle {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* --- Contenedor Principal (Tarjeta Glassmorphism) --- */
+.validar-body.glass-card {
+  padding: 40px;
+}
+
+/* --- Menú de Inicio (Selección de Método) --- */
+.init-menu {
+  padding: 30px 10px;
+}
+
+/* Animación del "Escudo" de seguridad */
+.shield-animation {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shield-icon {
+  font-size: 4rem;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.5));
+}
+
+.shield-glow {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulseGlow 3s infinite ease-in-out;
+  z-index: 1;
+}
+
+.init-menu h3 { font-size: 1.6rem; font-weight: 700; margin-bottom: 10px; color: var(--text-color); }
+.init-menu p { color: var(--text-muted); margin-bottom: 35px; }
+
+.menu-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* --- Botones de Acción --- */
+.btn {
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(2, 132, 199, 0.6); }
+
+/* --- Interfaz de Escaneo QR --- */
+.scanner-container {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  aspect-ratio: 1;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(14, 165, 233, 0.3);
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.2);
+}
+
+/* Overlay para el efecto visual del láser */
+.scanner-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scanner-laser {
+  position: absolute;
+  width: 75%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+  animation: laserSweep 2s infinite ease-in-out;
+  box-shadow: 0 0 12px #0284c7;
+}
+
+/* --- Pantalla de Carga (Spinner) --- */
+.validation-loader { padding: 40px 10px; text-align: center; }
+
+.spinner {
+  width: 60px; height: 60px;
+  border: 4px solid rgba(14, 165, 233, 0.1);
+  border-left-color: #0284c7;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
+}
+
+/* --- Alerta / Errores --- */
+.validation-alert {
+  display: flex;
+  gap: 20px;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  padding: 24px;
+  border-radius: 16px;
+}
+
+/* --- Resultados (Válido vs Inválido) --- */
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 1.25rem;
+}
+
+.result-valid .result-badge {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+/* --- Tarjetas de Datos --- */
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Sello de verificación Blockchain */
+.blockchain-badge-seal {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes laserSweep { 0%, 100% { top: 12.5%; } 50% { top: 87.5%; } }
+@keyframes pulseGlow { 0%, 100% { transform: scale(0.95); opacity: 0.4; } 50% { transform: scale(1.05); opacity: 0.8; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* =============================================
+   SECCIÓN DE RESULTADOS — DISEÑO PREMIUM
+   ============================================= */
+
+.result-section {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.45s ease-out forwards;
+}
+
+/* --- Badge de Estado Central --- */
+.result-status-center {
+  text-align: center;
+}
+
+.result-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 32px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.badge-valid {
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.badge-invalid {
+  background: rgba(239, 68, 68, 0.12);
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+}
+
+.badge-icon {
+  font-size: 1.4rem;
+}
+
+.result-status-msg {
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* --- Grid de Tarjetas de Datos --- */
+.result-data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.result-data-grid.single-col {
+  grid-template-columns: 1fr;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* --- Tarjeta de Datos Premium --- */
+.result-data-card {
+  padding: 24px;
+}
+
+.rdc-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.rdc-icon {
+  font-size: 1.4rem;
+}
+
+.rdc-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.rdc-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin-bottom: 16px;
+}
+
+.rdc-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rdc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 12px;
+}
+
+.rdc-row:last-child {
+  border-bottom: none;
+}
+
+/* Variante de fila en columna para valores largos */
+.rdc-row-col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.rdc-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rdc-value {
+  font-size: 0.88rem;
+  color: var(--text-color);
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Tipo / Categoría del documento en color primario */
+.rdc-accent {
+  color: var(--primary-color) !important;
+}
+
+/* Valores con fuente monoespaciada */
+.rdc-mono {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.3px;
+}
+
+/* Hash criptográfico largo — permite ruptura de línea */
+.rdc-hash {
+  color: var(--primary-color) !important;
+  word-break: break-all;
+  text-align: left !important;
+}
+
+/* --- Sello Blockchain --- */
+.blockchain-seal-badge {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.18) 0%, rgba(37, 99, 235, 0.1) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #60a5fa;
+  letter-spacing: 0.8px;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* --- Botón de Reinicio --- */
+.result-reset-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .result-data-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .result-status-badge {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+}

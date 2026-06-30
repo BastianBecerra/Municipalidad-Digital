@@ -1,0 +1,203 @@
+/* ==========================================
+   GENERAR DOCUMENTO - ESTILOS
+   Estructura: Layout del formulario, Validaciones y Feedback
+   ========================================== */
+
+.generar-doc-page {
+  min-height: 100vh;
+  padding-top: 100px;
+  padding-bottom: 60px;
+}
+
+.generar-doc-container {
+  display: flex;
+  justify-content: center;
+}
+
+.generar-card {
+  width: 100%;
+  max-width: 700px;
+  padding: 40px;
+}
+
+/* --- Cabecera de la sección --- */
+.generar-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.generar-header .icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.generar-header h1 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.generar-header p {
+  color: var(--text-muted);
+}
+
+/* --- Estructura del Formulario --- */
+.generar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Grilla responsive para los campos del formulario */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.help-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: block;
+}
+
+.btn-submit {
+  margin-top: 10px;
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 1rem;
+}
+
+/* --- Validaciones de campo en tiempo real --- */
+.cu-input.input-error {
+  border-color: #ef4444; /* Borde rojo para indicar error */
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.cu-input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+.field-error {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: block;
+  animation: fadeInError 0.3s ease;
+}
+
+/* Animación para el mensaje de error */
+@keyframes fadeInError {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Diseño Adaptativo (Responsive) --- */
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr; /* Cambia a una sola columna en pantallas pequeñas */
+  }
+}
+
+/* --- Cuadros de Estado (Feedback de operación) --- */
+.status-box {
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.error-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.success-box {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.success-box h3 {
+  color: var(--secondary-color);
+  margin-bottom: 5px;
+}
+
+.success-box p {
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+/* --- Animaciones globales --- */
+.animate-in {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cu-input.input-readonly,
+.dark-mode .cu-input.input-readonly {
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+  cursor: default;
+  box-shadow: none !important;
+}
+
+/* Indicador de estado de descarga en el modal de éxito */
+.download-status-indicator {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.download-status-indicator.status-downloading {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.download-status-indicator.status-completed {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+  animation: bounceScale 0.3s ease-out;
+}
+
+.download-status-indicator.status-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.download-status-indicator.status-idle {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border-color: var(--border-color);
+}
+
+@keyframes bounceScale {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}

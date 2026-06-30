@@ -1,0 +1,55 @@
+services:
+  postgres-documentos:
+    image: postgres:16-alpine
+    container_name: postgres-documentos
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: documentos_db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_documentos_data:/var/lib/postgresql/data
+    networks:
+      - muni-network
+
+  app-documentos:
+    build: .
+    container_name: app-documentos
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-documentos:5432/documentos_db
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET}
+      MUNI_BLOCKCHAIN_URL: http://blockchain/api/blockchain
+    depends_on:
+      - postgres-documentos
+    networks:
+      - muni-network
+
+  pgadmin-documentos:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-documentos
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5051:80"
+    depends_on:
+      - postgres-documentos
+    networks:
+      - muni-network
+
+networks:
+  muni-network:
+    external: true
+
+volumes:
+  postgres_documentos_data:

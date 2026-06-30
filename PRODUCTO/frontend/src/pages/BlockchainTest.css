@@ -1,0 +1,197 @@
+/* ==========================================
+   VERIFICADOR BLOCKCHAIN - ESTILOS
+   Estructura: Layout, Formulario de entrada y Cajas de resultados
+   ========================================== */
+
+.blockchain-page {
+  min-height: 100vh;
+  padding-top: 100px;
+}
+
+.blockchain-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* Tarjeta contenedora con diseño modular */
+.blockchain-card {
+  width: 100%;
+  max-width: 700px;
+  padding: 40px;
+  border-radius: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* --- Cabecera de la sección --- */
+.blockchain-header {
+  text-align: center;
+}
+
+.blockchain-header .icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.blockchain-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.blockchain-header p {
+  color: var(--text-muted);
+}
+
+/* --- Formulario de entrada --- */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-left: 5px;
+}
+
+.input-group input, 
+.input-group textarea {
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--text-color);
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus, 
+.input-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: var(--card-bg);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+/* --- Cajas de estado (Feedback de la operación) --- */
+.status-box {
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.status-icon {
+  font-size: 24px;
+}
+
+/* Estilos de error (Rojo) */
+.error-box {
+  background: rgba(255, 71, 87, 0.1);
+  border: 1px solid rgba(255, 71, 87, 0.2);
+  color: #ff4757;
+}
+
+/* Estilos de éxito (Verde) */
+.success-box {
+  background: rgba(46, 213, 115, 0.1);
+  border: 1px solid rgba(46, 213, 115, 0.2);
+}
+
+.success-box h3 { color: #059669; margin-bottom: 5px; }
+.success-box p { color: var(--text-muted); font-size: 0.95rem; }
+
+/* Visualización del hash de transacción (Tx Hash) */
+.tx-hash {
+  display: block;
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  word-break: break-all; /* Rompe el hash si es muy largo para no romper el layout */
+}
+
+/* Estilo para la verificación de integridad */
+.verify-box {
+  background: rgba(79, 172, 254, 0.1);
+  border: 1px solid rgba(79, 172, 254, 0.2);
+}
+
+.verify-box h3 { color: var(--primary-color); margin-bottom: 15px; }
+
+/* Grilla de datos recuperados */
+.data-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.data-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.data-item span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.data-item code, 
+.data-item p {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.verified-badge {
+  display: inline-block;
+  background: #2ed573;
+  color: #000;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* --- Animaciones --- */
+.animate-in {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Responsividad --- */
+@media (max-width: 600px) {
+  .actions {
+    grid-template-columns: 1fr; /* Botones apilados en móvil */
+  }
+}
