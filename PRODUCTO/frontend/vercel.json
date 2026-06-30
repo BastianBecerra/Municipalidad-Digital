@@ -5,20 +5,40 @@
       "destination": "https://api-gateway-production-0014.up.railway.app/auth/:path*"
     },
     {
+      "source": "/usuarios",
+      "destination": "https://api-gateway-production-0014.up.railway.app/usuarios"
+    },
+    {
       "source": "/usuarios/:path*",
       "destination": "https://api-gateway-production-0014.up.railway.app/usuarios/:path*"
+    },
+    {
+      "source": "/territorios",
+      "destination": "https://api-gateway-production-0014.up.railway.app/territorios"
     },
     {
       "source": "/territorios/:path*",
       "destination": "https://api-gateway-production-0014.up.railway.app/territorios/:path*"
     },
     {
+      "source": "/documentos",
+      "destination": "https://api-gateway-production-0014.up.railway.app/documentos"
+    },
+    {
       "source": "/documentos/:path*",
       "destination": "https://api-gateway-production-0014.up.railway.app/documentos/:path*"
     },
     {
+      "source": "/api/blockchain",
+      "destination": "https://api-gateway-production-0014.up.railway.app/api/blockchain"
+    },
+    {
       "source": "/api/blockchain/:path*",
       "destination": "https://api-gateway-production-0014.up.railway.app/api/blockchain/:path*"
+    },
+    {
+      "source": "/api/validacion",
+      "destination": "https://api-gateway-production-0014.up.railway.app/api/validacion"
     },
     {
       "source": "/api/validacion/:path*",
