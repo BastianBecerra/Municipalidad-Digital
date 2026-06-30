@@ -1,12 +1,14 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
-const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "";
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+const PRIVATE_KEY = process.env.PRIVATE_KEY || process.env.BLOCKCHAIN_PRIVATE_KEY || "";
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || process.env.BLOCKCHAIN_NODE_URL || "";
+const AMOY_RPC_URL = process.env.AMOY_RPC_URL || process.env.POLYGON_AMOY_RPC_URL || "";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: "0.8.24",
+  defaultNetwork: "hardhat",
   networks: {
     localhost: {
       url: "http://127.0.0.1:8545",
@@ -14,7 +16,12 @@ module.exports = {
     sepolia: {
       url: SEPOLIA_RPC_URL,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+      chainId: 11155111,
+    },
+    amoy: {
+      url: AMOY_RPC_URL,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+      chainId: 80002,
     },
   },
 };
-
